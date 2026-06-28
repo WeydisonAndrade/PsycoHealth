@@ -7,18 +7,26 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/api-auth";
 import { getPaymentSummary, processPayment } from "@/domain/payment";
+import { getAppointmentById } from "@/domain/scheduling";
 
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ appointmentId: string }> }
 ) {
-  // Verificação de autenticação e role de paciente
   const { session, error } = await requireAuth(["PATIENT"]);
   if (error) return error;
 
   const { appointmentId } = await params;
 
-  // Consulta do resumo de pagamento via serviço de domínio
+  const appointment = await getAppointmentById(appointmentId);
+  if (!appointment) {
+    return NextResponse.json({ error: "Pagamento não encontrado" }, { status: 404 });
+  }
+
+  if (appointment.patient.user.id !== session!.userId) {
+    return NextResponse.json({ error: "Acesso negado" }, { status: 403 });
+  }
+
   const summary = await getPaymentSummary(appointmentId);
 
   if (!summary) {

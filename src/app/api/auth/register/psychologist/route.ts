@@ -9,9 +9,9 @@ import { NextResponse } from "next/server";
 import {
   registerPsychologistSchema,
   registerPsychologist,
-  AuthError,
 } from "@/domain/auth";
 import { setSessionCookie } from "@/lib/session";
+import { mapAuthRouteError } from "@/lib/http-errors";
 
 export async function POST(request: Request) {
   try {
@@ -37,15 +37,10 @@ export async function POST(request: Request) {
       { status: 201 }
     );
   } catch (error) {
-    // Conflito (ex.: e-mail ou CRP já cadastrado)
-    if (error instanceof AuthError) {
-      return NextResponse.json({ error: error.message }, { status: 409 });
+    const mapped = mapAuthRouteError(error);
+    if (mapped) {
+      return NextResponse.json({ error: mapped.message }, { status: mapped.status });
     }
-    // Erros de validação do schema
-    if (error instanceof Error && error.name === "ZodError") {
-      return NextResponse.json({ error: "Dados inválidos" }, { status: 400 });
-    }
-    // Erro genérico do servidor
     return NextResponse.json({ error: "Erro ao cadastrar" }, { status: 500 });
   }
 }
