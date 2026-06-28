@@ -71,11 +71,6 @@ export function LegacyHeader() {
               </a>
             </li>
             <li>
-              <a href="#contato" onClick={handleAnchorClick}>
-                Contato
-              </a>
-            </li>
-            <li>
               <a href="#agendar" className="btn btn-primary" onClick={handleAnchorClick}>
                 Agendar Consulta
               </a>

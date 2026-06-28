@@ -1,6 +1,6 @@
 /**
  * Página de checkout do pagamento de uma consulta.
- * Exibe valores com split plataforma/psicólogo e só aceita o paciente dono do agendamento.
+ * Exibe valor da consulta e só aceita o paciente dono do agendamento.
  */
 import { notFound, redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
@@ -31,12 +31,9 @@ export default async function PaymentPage({
       <div className="container">
         <h1 className="page-title">Pagamento</h1>
         <p className="page-subtitle">Confirme o pagamento para liberar sua consulta</p>
-        {/* Componente de checkout com simulação de pagamento e split 80/20 */}
         <PaymentCheckout
           appointmentId={id}
           totalAmount={appointment.payment.totalAmount}
-          platformCommission={appointment.payment.platformCommission}
-          psychologistPayout={appointment.payment.psychologistPayout}
           psychologistName={appointment.psychologist.user.name}
         />
       </div>

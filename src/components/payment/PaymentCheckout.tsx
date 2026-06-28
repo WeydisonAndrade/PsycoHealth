@@ -1,5 +1,5 @@
 /**
- * Checkout de pagamento simulado com detalhamento de comissão e repasse.
+ * Checkout de pagamento simulado.
  * Usado em src/app/appointments/[id]/payment/page.tsx; confirma via POST /api/payments/:id.
  */
 "use client";
@@ -10,21 +10,15 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { formatCurrency } from "@/lib/utils";
-import { PLATFORM_COMMISSION_RATE } from "@/domain/payment";
-
 interface PaymentSummaryProps {
   appointmentId: string;
   totalAmount: number;
-  platformCommission: number;
-  psychologistPayout: number;
   psychologistName: string;
 }
 
 export function PaymentCheckout({
   appointmentId,
   totalAmount,
-  platformCommission,
-  psychologistPayout,
   psychologistName,
 }: PaymentSummaryProps) {
   /* --- Estado e hooks --- */
@@ -65,18 +59,6 @@ export function PaymentCheckout({
       </Alert>
 
       <div className="mt-2">
-        <div className="split-row">
-          <span>Valor da sessão</span>
-          <span>{formatCurrency(totalAmount)}</span>
-        </div>
-        <div className="split-row">
-          <span>Comissão da plataforma ({PLATFORM_COMMISSION_RATE * 100}%)</span>
-          <span>{formatCurrency(platformCommission)}</span>
-        </div>
-        <div className="split-row">
-          <span>Repasse ao psicólogo</span>
-          <span>{formatCurrency(psychologistPayout)}</span>
-        </div>
         <div className="split-row">
           <span>Total a pagar</span>
           <span>{formatCurrency(totalAmount)}</span>

@@ -26,7 +26,7 @@ export function EarningsSummary({ totalEarnings, totalSessions, payments }: Earn
   return (
     <div>
       <div className="grid-2 mb-3">
-        <Card title="Total recebido" subtitle="80% após comissão de 20%">
+        <Card title="Total recebido">
           <p className="price">{formatCurrency(totalEarnings)}</p>
         </Card>
         <Card title="Consultas pagas">
