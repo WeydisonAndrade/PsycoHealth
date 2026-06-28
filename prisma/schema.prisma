@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  PATIENT
+  PSYCHOLOGIST
+  ADMIN
+}
+
+enum AppointmentStatus {
+  PENDING_PAYMENT
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         UserRole
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  psychologistProfile PsychologistProfile?
+  patientProfile      PatientProfile?
+}
+
+model PsychologistProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  crp            String   @unique
+  bio            String   @default("")
+  specialties    String   @default("[]")
+  sessionPrice   Float    @default(150)
+  photoUrl       String?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  availability AvailabilitySlot[]
+  appointments Appointment[]     @relation("PsychologistAppointments")
+}
+
+model PatientProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  phone     String?
+  birthDate String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments Appointment[] @relation("PatientAppointments")
+}
+
+model AvailabilitySlot {
+  id             String @id @default(cuid())
+  psychologistId String
+  dayOfWeek      Int
+  startTime      String
+  endTime        String
+
+  psychologist PsychologistProfile @relation(fields: [psychologistId], references: [id], onDelete: Cascade)
+
+  @@index([psychologistId])
+}
+
+model Appointment {
+  id             String            @id @default(cuid())
+  psychologistId String
+  patientId      String
+  scheduledAt    DateTime
+  durationMin    Int               @default(50)
+  status         AppointmentStatus @default(PENDING_PAYMENT)
+  notes          String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  psychologist PsychologistProfile @relation("PsychologistAppointments", fields: [psychologistId], references: [id])
+  patient      PatientProfile      @relation("PatientAppointments", fields: [patientId], references: [id])
+  payment      Payment?
+  videoSession VideoSession?
+
+  @@index([psychologistId, scheduledAt])
+  @@index([patientId])
+}
+
+model Payment {
+  id                 String        @id @default(cuid())
+  appointmentId      String        @unique
+  totalAmount        Float
+  platformCommission Float
+  psychologistPayout Float
+  commissionRate     Float         @default(0.20)
+  status             PaymentStatus @default(PENDING)
+  paidAt             DateTime?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+}
+
+model VideoSession {
+  id            String    @id @default(cuid())
+  appointmentId String    @unique
+  roomId        String    @unique
+  startedAt     DateTime?
+  endedAt       DateTime?
+  createdAt     DateTime  @default(now())
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+}
