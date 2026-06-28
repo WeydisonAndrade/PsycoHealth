@@ -69,5 +69,11 @@ export async function setSessionCookie(token: string) {
 /** Remove cookie — usado no logout */
 export async function clearSessionCookie() {
   const cookieStore = await cookies();
-  cookieStore.delete(SESSION_COOKIE);
+  cookieStore.set(SESSION_COOKIE, "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 0,
+  });
 }

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import type { SessionPayload } from "@/lib/session";
+import { getDashboardPath, LOGOUT_REDIRECT_PATH } from "@/lib/auth-routes";
 
 interface HeaderNavProps {
   session: SessionPayload | null;
@@ -33,7 +34,7 @@ export function HeaderNav({ session }: HeaderNavProps) {
   async function handleLogout() {
     closeMenu();
     await fetch("/api/auth/session", { method: "POST" });
-    router.push("/");
+    router.push(LOGOUT_REDIRECT_PATH);
     router.refresh();
   }
 
@@ -73,14 +74,7 @@ export function HeaderNav({ session }: HeaderNavProps) {
           {session ? (
             <>
               <li>
-                <Link
-                  href={
-                    session.role === "PSYCHOLOGIST"
-                      ? "/dashboard/psychologist"
-                      : "/dashboard/patient"
-                  }
-                  onClick={closeMenu}
-                >
+                <Link href={getDashboardPath(session.role)} onClick={closeMenu}>
                   Minha área
                 </Link>
               </li>

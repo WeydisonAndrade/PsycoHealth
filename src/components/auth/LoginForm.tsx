@@ -11,8 +11,13 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { Card } from "@/components/ui/Card";
+import { resolvePostAuthPath } from "@/lib/auth-routes";
 
-export function LoginForm() {
+interface LoginFormProps {
+  redirectTo?: string;
+}
+
+export function LoginForm({ redirectTo }: LoginFormProps) {
   /* --- Estado e hooks --- */
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -40,7 +45,7 @@ export function LoginForm() {
       }
 
       const role = data.user.role;
-      router.push(role === "PSYCHOLOGIST" ? "/dashboard/psychologist" : "/dashboard/patient");
+      router.push(resolvePostAuthPath(role, redirectTo));
       router.refresh();
     } catch {
       setError("Erro de conexão");

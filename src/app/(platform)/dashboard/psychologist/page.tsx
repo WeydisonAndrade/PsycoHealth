@@ -4,6 +4,7 @@
  */
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
+import { getDashboardPath, getLoginPath } from "@/lib/auth-routes";
 import { getProfileByUserId, getPsychologistEarnings } from "@/domain/psychologist";
 import { getPsychologistAppointments } from "@/domain/scheduling";
 import { ProfileForm } from "@/components/psychologist/ProfileForm";
@@ -14,8 +15,8 @@ import { AppointmentCard } from "@/components/scheduling/AppointmentCard";
 export default async function PsychologistDashboardPage() {
   /** Guardas de rota — redireciona visitantes e pacientes para suas áreas */
   const session = await getSession();
-  if (!session) redirect("/login");
-  if (session.role !== "PSYCHOLOGIST") redirect("/dashboard/patient");
+  if (!session) redirect(getLoginPath("/dashboard/psychologist"));
+  if (session.role !== "PSYCHOLOGIST") redirect(getDashboardPath(session.role));
 
   const profile = await getProfileByUserId(session.userId);
   if (!profile) redirect("/register/psychologist");

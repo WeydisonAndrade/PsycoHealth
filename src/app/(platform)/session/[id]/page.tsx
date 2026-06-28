@@ -4,6 +4,7 @@
  */
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
+import { getDashboardPath, getLoginPath } from "@/lib/auth-routes";
 import { getAppointmentById } from "@/domain/scheduling";
 import { VideoRoom } from "@/components/video/VideoRoom";
 
@@ -13,19 +14,20 @@ export default async function SessionPage({
   params: Promise<{ id: string }>;
 }) {
   const session = await getSession();
-  if (!session) redirect("/login");
-
   const { id } = await params;
+  const sessionPath = `/session/${id}`;
+
+  if (!session) redirect(getLoginPath(sessionPath));
+
   const appointment = await getAppointmentById(id);
 
-  if (!appointment) redirect("/dashboard/patient");
+  if (!appointment) redirect(getDashboardPath(session.role));
 
-  /** Verifica se o usuário logado é paciente ou psicólogo desta consulta */
   const isParticipant =
     appointment.patient.user.id === session.userId ||
     appointment.psychologist.user.id === session.userId;
 
-  if (!isParticipant) redirect("/");
+  if (!isParticipant) redirect(getDashboardPath(session.role));
 
   return (
     <div className="page">

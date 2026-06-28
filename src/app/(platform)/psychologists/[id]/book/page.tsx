@@ -5,6 +5,7 @@
 import { notFound, redirect } from "next/navigation";
 import { getPublicProfile } from "@/domain/psychologist";
 import { getSession } from "@/lib/session";
+import { getDashboardPath, getLoginPath } from "@/lib/auth-routes";
 import { BookAppointmentClient } from "./BookAppointmentClient";
 
 export default async function BookPage({
@@ -14,10 +15,12 @@ export default async function BookPage({
 }) {
   /** Guardas de rota — apenas pacientes logados podem agendar */
   const session = await getSession();
-  if (!session) redirect("/login");
-  if (session.role !== "PATIENT") redirect("/psychologists");
-
   const { id } = await params;
+  const bookPath = `/psychologists/${id}/book`;
+
+  if (!session) redirect(getLoginPath(bookPath));
+  if (session.role !== "PATIENT") redirect(getDashboardPath(session.role));
+
   const profile = await getPublicProfile(id);
   if (!profile) notFound();
 

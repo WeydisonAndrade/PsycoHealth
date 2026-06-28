@@ -11,8 +11,13 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { Card } from "@/components/ui/Card";
+import { resolvePostAuthPath } from "@/lib/auth-routes";
 
-export function RegisterPatientForm() {
+interface RegisterPatientFormProps {
+  redirectTo?: string;
+}
+
+export function RegisterPatientForm({ redirectTo }: RegisterPatientFormProps) {
   /* --- Estado e hooks --- */
   const router = useRouter();
   const [name, setName] = useState("");
@@ -41,7 +46,7 @@ export function RegisterPatientForm() {
         return;
       }
 
-      router.push("/dashboard/patient");
+      router.push(resolvePostAuthPath("PATIENT", redirectTo));
       router.refresh();
     } catch {
       setError("Erro de conexão");

@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getPublicProfile } from "@/domain/psychologist";
 import { getSession } from "@/lib/session";
+import { getDashboardPath, getLoginPath } from "@/lib/auth-routes";
 import { formatCurrency } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -21,6 +22,7 @@ export default async function PsychologistProfilePage({
 
   /** Sessão atual — usada para decidir se o usuário pode agendar */
   const session = await getSession();
+  const bookPath = `/psychologists/${id}/book`;
 
   return (
     <div className="page">
@@ -56,13 +58,19 @@ export default async function PsychologistProfilePage({
                 <p className="muted-text mb-2">
                   Faça login como paciente para agendar uma consulta.
                 </p>
-                <Link href="/login">
+                <Link href={getLoginPath(bookPath)}>
                   <Button fullWidth>Entrar</Button>
                 </Link>
+                <p className="auth-links mt-2">
+                  <Link href={`/register/patient?next=${encodeURIComponent(bookPath)}`}>
+                    Criar conta de paciente
+                  </Link>
+                </p>
               </>
             ) : session.role !== "PATIENT" ? (
               <p className="muted-text">
-                Apenas pacientes podem agendar consultas.
+                Apenas pacientes podem agendar consultas.{" "}
+                <Link href={getDashboardPath(session.role)}>Ir para minha área</Link>
               </p>
             ) : (
               <Link href={`/psychologists/${id}/book`}>
