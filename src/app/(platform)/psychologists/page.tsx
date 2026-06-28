@@ -1,27 +1,39 @@
 /**
  * Catálogo público de psicólogos cadastrados na plataforma.
- * Server Component — busca a lista no servidor e renderiza cards clicáveis.
+ * Aceita filtro ?specialty= via query string (links da landing de áreas).
  */
 import { listPsychologists } from "@/domain/psychologist";
 import { PsychologistCard } from "@/components/psychologist/PsychologistCard";
 
-export default async function PsychologistsPage() {
-  /** Lista completa de perfis públicos disponíveis para agendamento */
-  const psychologists = await listPsychologists();
+export default async function PsychologistsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ specialty?: string }>;
+}) {
+  const { specialty } = await searchParams;
+  const psychologists = await listPsychologists(
+    specialty ? { specialty } : undefined
+  );
 
   return (
     <div className="page">
       <div className="container">
         <h1 className="page-title">Psicólogos disponíveis</h1>
-        <p className="page-subtitle">Encontre o profissional ideal para você</p>
+        <p className="page-subtitle">
+          {specialty
+            ? `Especialidade: ${specialty}`
+            : "Encontre o profissional ideal para você"}
+        </p>
 
         {psychologists.length === 0 ? (
-          /* Estado vazio quando ainda não há profissionais cadastrados */
           <div className="empty-state">
-            <p>Nenhum psicólogo cadastrado ainda.</p>
+            <p>
+              {specialty
+                ? `Nenhum psicólogo encontrado para "${specialty}".`
+                : "Nenhum psicólogo cadastrado ainda."}
+            </p>
           </div>
         ) : (
-          /* Grade responsiva com um card por psicólogo */
           <div className="grid-3">
             {psychologists.map((p) => (
               <PsychologistCard
