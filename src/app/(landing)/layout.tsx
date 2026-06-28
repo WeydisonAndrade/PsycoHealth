@@ -6,14 +6,16 @@ import "@/styles/legacy-landing.css";
 /** Layout da landing — réplica fiel do index.html legado */
 export default function LandingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="legacy-home">
-      <a href="#main" className="visually-hidden">
-        Pular para o conteúdo principal
-      </a>
-      <LegacyHeader />
-      <main id="main">{children}</main>
-      <LegacyFooter />
+    <>
+      <div className="legacy-home">
+        <a href="#main" className="visually-hidden">
+          Pular para o conteúdo principal
+        </a>
+        <LegacyHeader />
+        <main id="main">{children}</main>
+        <LegacyFooter />
+      </div>
       <ScrollAnimations />
-    </div>
+    </>
   );
 }

@@ -1,8 +1,7 @@
 /**
- * Estilos globais da aplicação PsycoHealth.
- * Define tokens de design (cores, fontes), reset base e classes utilitárias de layout.
+ * Estilos globais — tokens, reset e textura de fundo.
+ * Componentes do MVP são importados apenas em (platform)/layout.tsx.
  */
-@import "../components/ui/components.css";
 
 /* ==========================================================================
    Variáveis CSS — paleta escura com acentos dourados

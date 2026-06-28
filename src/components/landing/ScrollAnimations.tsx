@@ -5,6 +5,9 @@ import { useEffect } from "react";
 /** Intersection Observer e smooth scroll — comportamento do legacy/index.html */
 export function ScrollAnimations() {
   useEffect(() => {
+    const root = document.querySelector(".legacy-home");
+    if (!root) return;
+
     document.querySelectorAll('.legacy-home a[href^="#"]').forEach((anchor) => {
       anchor.addEventListener("click", (e) => {
         const href = anchor.getAttribute("href");
@@ -29,6 +32,7 @@ export function ScrollAnimations() {
     );
 
     document.querySelectorAll(".legacy-home .animate-on-scroll").forEach((el) => {
+      el.classList.add("is-visible");
       observer.observe(el);
     });
 
