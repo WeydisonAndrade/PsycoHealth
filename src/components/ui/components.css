@@ -1,4 +1,10 @@
-/* Buttons */
+/* ==========================================================================
+   PsycoHealth — Estilos dos componentes reutilizáveis
+   Importado globalmente; classes referenciadas pelos componentes em src/components/
+   ========================================================================== */
+
+/* --- Buttons ---
+   Botões com variantes (primary, secondary, ghost, danger) e tamanhos (sm, lg) */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -71,7 +77,8 @@
   width: 100%;
 }
 
-/* Form */
+/* --- Form ---
+   Labels, inputs, textareas, selects e mensagens de erro de validação */
 .label {
   display: block;
   font-size: 0.95rem;
@@ -116,7 +123,8 @@
   margin-top: 0.25rem;
 }
 
-/* Card */
+/* --- Card ---
+   Container com cabeçalho (título/subtítulo) e corpo para conteúdo */
 .card {
   background: var(--bg-charcoal);
   border: 1px solid var(--border-gold);
@@ -146,7 +154,8 @@
   padding: 1.5rem;
 }
 
-/* Badge */
+/* --- Badge ---
+   Etiquetas de status com cores semânticas (sucesso, aviso, perigo) */
 .badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
@@ -177,7 +186,8 @@
   color: var(--danger);
 }
 
-/* Alert */
+/* --- Alert ---
+   Mensagens de feedback (erro, sucesso, informação) */
 .alert {
   padding: 1rem 1.25rem;
   border-radius: 4px;
@@ -203,7 +213,8 @@
   color: var(--text-muted);
 }
 
-/* Header */
+/* --- Header ---
+   Cabeçalho fixo com logo, navegação e ações de autenticação */
 .site-header {
   position: fixed;
   top: 0;
@@ -254,7 +265,8 @@
   align-items: center;
 }
 
-/* Footer */
+/* --- Footer ---
+   Rodapé com copyright e informações da plataforma */
 .site-footer {
   position: relative;
   z-index: 1;
@@ -265,7 +277,8 @@
   font-size: 0.9rem;
 }
 
-/* Specialty tags */
+/* --- Specialty tags ---
+   Tags de especialidades (estáticas e selecionáveis no cadastro/perfil) */
 .tags {
   display: flex;
   flex-wrap: wrap;
@@ -292,7 +305,8 @@
   color: var(--bg-deep);
 }
 
-/* Slot picker */
+/* --- Slot picker ---
+   Grade de horários disponíveis para agendamento de consultas */
 .slots-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -327,7 +341,8 @@
   cursor: not-allowed;
 }
 
-/* Payment split */
+/* --- Payment split ---
+   Linhas de detalhamento de valores no checkout e histórico de repasses */
 .split-row {
   display: flex;
   justify-content: space-between;
@@ -342,7 +357,8 @@
   padding-top: 0.75rem;
 }
 
-/* Video */
+/* --- Video ---
+   Container responsivo 16:9 para iframe do Jitsi Meet */
 .video-container {
   width: 100%;
   aspect-ratio: 16/9;
@@ -358,7 +374,8 @@
   border: none;
 }
 
-/* Psychologist card */
+/* --- Psychologist card ---
+   Layout do card na listagem pública de psicólogos */
 .psychologist-card {
   display: flex;
   flex-direction: column;
@@ -372,7 +389,8 @@
   color: var(--gold);
 }
 
-/* Auth */
+/* --- Auth ---
+   Estilos dos formulários de login e cadastro */
 .auth-card {
   max-width: 480px;
   margin: 0 auto;
@@ -385,7 +403,8 @@
   font-size: 0.95rem;
 }
 
-/* Hero landing */
+/* --- Hero landing ---
+   Seção principal e features da página inicial */
 .hero {
   min-height: 90vh;
   display: flex;

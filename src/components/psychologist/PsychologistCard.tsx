@@ -1,3 +1,7 @@
+/**
+ * Card resumido de um psicólogo na listagem pública (nome, CRP, bio, especialidades e preço).
+ * Usado em src/app/psychologists/page.tsx; link leva ao perfil completo do profissional.
+ */
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -20,6 +24,7 @@ export function PsychologistCard({
   specialties,
   sessionPrice,
 }: PsychologistCardProps) {
+  /* --- Renderização --- */
   return (
     <Card className="psychologist-card">
       <div>

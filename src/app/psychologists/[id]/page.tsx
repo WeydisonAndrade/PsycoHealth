@@ -1,3 +1,7 @@
+/**
+ * Perfil público de um psicólogo específico.
+ * Exibe bio, especialidades, preço e CTA de agendamento (condicionado ao login).
+ */
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getPublicProfile } from "@/domain/psychologist";
@@ -15,12 +19,14 @@ export default async function PsychologistProfilePage({
   const profile = await getPublicProfile(id);
   if (!profile) notFound();
 
+  /** Sessão atual — usada para decidir se o usuário pode agendar */
   const session = await getSession();
 
   return (
     <div className="page">
       <div className="container">
         <div className="grid-2">
+          {/* Coluna esquerda — informações do perfil profissional */}
           <div>
             <h1 className="page-title">{profile.user.name}</h1>
             <p className="page-subtitle">CRP {profile.crp}</p>
@@ -44,6 +50,7 @@ export default async function PsychologistProfilePage({
             <p className="price mb-3">{formatCurrency(profile.sessionPrice)} por sessão</p>
           </div>
 
+          {/* Coluna direita — ação de agendamento conforme papel do usuário */}
           <Card title="Agendar consulta">
             {!session ? (
               <>

@@ -1,10 +1,17 @@
+/**
+ * Schemas Zod — validação de entrada para autenticação.
+ * Usados nas API routes antes de chamar o service.
+ */
+
 import { z } from "zod";
 
+/** Credenciais de login */
 export const loginSchema = z.object({
   email: z.string().email("E-mail inválido"),
   password: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
 });
 
+/** Dados do formulário de cadastro de paciente */
 export const registerPatientSchema = z.object({
   name: z.string().min(2, "Nome obrigatório"),
   email: z.string().email("E-mail inválido"),
@@ -12,6 +19,7 @@ export const registerPatientSchema = z.object({
   phone: z.string().optional(),
 });
 
+/** Dados do formulário de cadastro de psicólogo (inclui CRP e especialidades) */
 export const registerPsychologistSchema = z.object({
   name: z.string().min(2, "Nome obrigatório"),
   email: z.string().email("E-mail inválido"),

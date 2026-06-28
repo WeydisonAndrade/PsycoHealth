@@ -1,3 +1,7 @@
+/**
+ * Wrapper cliente para o fluxo de agendamento.
+ * Necessário porque usa hooks de navegação e callbacks pós-agendamento.
+ */
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -13,6 +17,7 @@ export function BookAppointmentClient({ psychologistId }: Props) {
 
   return (
     <Card>
+      {/* Após criar o agendamento, redireciona para a página de pagamento */}
       <BookAppointmentForm
         psychologistId={psychologistId}
         onBooked={(appointmentId) => {

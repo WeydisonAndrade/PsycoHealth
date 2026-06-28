@@ -1,3 +1,7 @@
+/**
+ * Seletor de horários disponíveis e formulário de agendamento de consulta.
+ * SlotPicker e BookAppointmentForm usados em src/app/psychologists/[id]/book/BookAppointmentClient.tsx.
+ */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -11,7 +15,12 @@ interface SlotPickerProps {
   selected?: string;
 }
 
+/**
+ * Grade de botões com horários livres do psicólogo (próximos 14 dias).
+ * Busca slots via GET /api/psychologists/:id/slots.
+ */
 export function SlotPicker({ psychologistId, onSelect, selected }: SlotPickerProps) {
+  /* --- Estado e hooks --- */
   const [slots, setSlots] = useState<{ datetime: string; available: boolean }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -31,6 +40,7 @@ export function SlotPicker({ psychologistId, onSelect, selected }: SlotPickerPro
     load();
   }, [psychologistId]);
 
+  /* --- Renderização --- */
   if (loading) return <p style={{ color: "var(--text-muted)" }}>Carregando horários...</p>;
   if (error) return <Alert type="error">{error}</Alert>;
   if (slots.length === 0) {
@@ -58,11 +68,14 @@ interface BookAppointmentFormProps {
   onBooked: (appointmentId: string) => void;
 }
 
+/** Formulário que combina SlotPicker com confirmação via POST /api/appointments */
 export function BookAppointmentForm({ psychologistId, onBooked }: BookAppointmentFormProps) {
+  /* --- Estado e hooks --- */
   const [selected, setSelected] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  /* --- Handlers de eventos --- */
   async function handleBook() {
     if (!selected) {
       setError("Selecione um horário");
@@ -93,6 +106,7 @@ export function BookAppointmentForm({ psychologistId, onBooked }: BookAppointmen
     }
   }
 
+  /* --- Renderização --- */
   return (
     <div>
       {error && <Alert type="error">{error}</Alert>}

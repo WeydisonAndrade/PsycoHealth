@@ -1,3 +1,7 @@
+/**
+ * Editor de disponibilidade semanal do psicólogo (dia, horário início/fim).
+ * Usado em src/app/dashboard/psychologist/page.tsx; persiste via PUT /api/psychologists/me.
+ */
 "use client";
 
 import { useState } from "react";
@@ -20,6 +24,7 @@ interface AvailabilityEditorProps {
 const emptySlot = (): Slot => ({ dayOfWeek: 1, startTime: "09:00", endTime: "17:00" });
 
 export function AvailabilityEditor({ initialSlots }: AvailabilityEditorProps) {
+  /* --- Estado e hooks --- */
   const [slots, setSlots] = useState<Slot[]>(
     initialSlots.length > 0 ? initialSlots : [emptySlot()]
   );
@@ -27,6 +32,7 @@ export function AvailabilityEditor({ initialSlots }: AvailabilityEditorProps) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  /* --- Handlers de eventos --- */
   function updateSlot(index: number, field: keyof Slot, value: string | number) {
     setSlots((prev) =>
       prev.map((s, i) => (i === index ? { ...s, [field]: value } : s))
@@ -67,6 +73,7 @@ export function AvailabilityEditor({ initialSlots }: AvailabilityEditorProps) {
     }
   }
 
+  /* --- Renderização --- */
   return (
     <Card title="Disponibilidade semanal">
       {error && <Alert type="error">{error}</Alert>}
@@ -110,6 +117,9 @@ export function AvailabilityEditor({ initialSlots }: AvailabilityEditorProps) {
   );
 }
 
+/**
+ * Campo de horário (input type="time") auxiliar para o editor de disponibilidade.
+ */
 function InputTime({
   label,
   value,
@@ -119,6 +129,7 @@ function InputTime({
   value: string;
   onChange: (v: string) => void;
 }) {
+  /* --- Renderização --- */
   return (
     <div className="form-group">
       <label className="label">{label}</label>

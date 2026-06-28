@@ -1,3 +1,9 @@
+/**
+ * Cliente Prisma singleton.
+ * Em desenvolvimento, reutiliza a instância no globalThis para evitar
+ * múltiplas conexões durante hot-reload do Next.js.
+ */
+
 import { PrismaClient } from "@prisma/client";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };

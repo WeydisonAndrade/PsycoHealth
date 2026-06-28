@@ -1,3 +1,7 @@
+/**
+ * Botão reutilizável com variantes visuais e tamanhos padronizados.
+ * Usado em formulários de auth, dashboards, cards de agendamento e navegação (HeaderNav).
+ */
 import type { ReactNode, ButtonHTMLAttributes } from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -7,6 +11,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
 }
 
+/** Mapeamento de variantes para classes CSS (.btn-primary, .btn-secondary, etc.) */
 const variantClass = {
   primary: "btn-primary",
   secondary: "btn-secondary",
@@ -14,6 +19,7 @@ const variantClass = {
   danger: "btn-danger",
 };
 
+/** Mapeamento de tamanhos para classes CSS (.btn-sm, .btn-lg) */
 const sizeClass = {
   sm: "btn-sm",
   md: "",
@@ -28,6 +34,7 @@ export function Button({
   children,
   ...props
 }: ButtonProps) {
+  /* --- Renderização --- */
   return (
     <button
       className={`btn ${variantClass[variant]} ${sizeClass[size]} ${fullWidth ? "btn-full" : ""} ${className}`}

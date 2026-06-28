@@ -1,3 +1,7 @@
+/**
+ * Checkout de pagamento simulado com detalhamento de comissão e repasse.
+ * Usado em src/app/appointments/[id]/payment/page.tsx; confirma via POST /api/payments/:id.
+ */
 "use client";
 
 import { useState } from "react";
@@ -23,10 +27,12 @@ export function PaymentCheckout({
   psychologistPayout,
   psychologistName,
 }: PaymentSummaryProps) {
+  /* --- Estado e hooks --- */
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  /* --- Handlers de eventos --- */
   async function handlePay() {
     setError("");
     setLoading(true);
@@ -49,6 +55,7 @@ export function PaymentCheckout({
     }
   }
 
+  /* --- Renderização --- */
   return (
     <Card title="Pagamento da consulta" subtitle={`Consulta com ${psychologistName}`}>
       {error && <Alert type="error">{error}</Alert>}

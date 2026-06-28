@@ -1,3 +1,7 @@
+/**
+ * Componentes de formulário: Input, Textarea e Select com label e mensagem de erro.
+ * Usados em cadastros (auth), perfil do psicólogo e editor de disponibilidade.
+ */
 import type { InputHTMLAttributes, TextareaHTMLAttributes } from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -5,9 +9,11 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
 }
 
+/** Campo de texto com label associada e exibição opcional de erro de validação */
 export function Input({ label, error, id, className = "", ...props }: InputProps) {
   const inputId = id ?? label.toLowerCase().replace(/\s/g, "-");
 
+  /* --- Renderização --- */
   return (
     <div className="form-group">
       <label htmlFor={inputId} className="label">
@@ -24,9 +30,11 @@ interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   error?: string;
 }
 
+/** Área de texto multilinha com label e suporte a mensagens de erro */
 export function Textarea({ label, error, id, className = "", ...props }: TextareaProps) {
   const inputId = id ?? label.toLowerCase().replace(/\s/g, "-");
 
+  /* --- Renderização --- */
   return (
     <div className="form-group">
       <label htmlFor={inputId} className="label">
@@ -48,9 +56,11 @@ interface SelectProps extends InputHTMLAttributes<HTMLSelectElement> {
   options: { value: string | number; label: string }[];
 }
 
+/** Lista suspensa com opções dinâmicas, label e mensagem de erro opcional */
 export function Select({ label, error, id, options, className = "", ...props }: SelectProps) {
   const inputId = id ?? label.toLowerCase().replace(/\s/g, "-");
 
+  /* --- Renderização --- */
   return (
     <div className="form-group">
       <label htmlFor={inputId} className="label">

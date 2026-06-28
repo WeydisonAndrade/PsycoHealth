@@ -1,3 +1,7 @@
+/**
+ * Container visual com borda dourada, cabeçalho opcional (título/subtítulo) e corpo.
+ * Usado em formulários de auth, dashboards, cards de psicólogo e checkout de pagamento.
+ */
 import type { ReactNode } from "react";
 
 interface CardProps {
@@ -8,6 +12,7 @@ interface CardProps {
 }
 
 export function Card({ children, className = "", title, subtitle }: CardProps) {
+  /* --- Renderização --- */
   return (
     <div className={`card ${className}`}>
       {(title || subtitle) && (

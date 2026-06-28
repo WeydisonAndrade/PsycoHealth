@@ -1,8 +1,14 @@
+/**
+ * Domínio: Videochamada
+ * Integração com Jitsi Meet — salas criadas após pagamento confirmado.
+ */
+
 import { AppointmentStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 
 const JITSI_BASE = "https://meet.jit.si";
 
+/** Gera ID único da sala vinculado à consulta */
 export function buildRoomId(appointmentId: string): string {
   return `PsycoHealth-${appointmentId}`;
 }
@@ -11,6 +17,7 @@ export function buildJitsiUrl(roomId: string): string {
   return `${JITSI_BASE}/${roomId}`;
 }
 
+/** Cria registro VideoSession no banco (idempotente) */
 export async function createVideoRoom(appointmentId: string) {
   const existing = await prisma.videoSession.findUnique({
     where: { appointmentId },
@@ -24,6 +31,10 @@ export async function createVideoRoom(appointmentId: string) {
   });
 }
 
+/**
+ * Valida se o usuário pode entrar na sala e retorna URL do Jitsi.
+ * Regras: participante da consulta, pagamento OK, janela de tempo válida.
+ */
 export async function canJoinRoom(appointmentId: string, userId: string) {
   const appointment = await prisma.appointment.findUnique({
     where: { id: appointmentId },
@@ -59,6 +70,7 @@ export async function canJoinRoom(appointmentId: string, userId: string) {
     return { allowed: false, reason: "Consulta não confirmada" };
   }
 
+  // Janela: 15 min antes até 30 min após o fim da sessão
   const now = new Date();
   const sessionStart = new Date(appointment.scheduledAt);
   const windowStart = new Date(sessionStart.getTime() - 15 * 60 * 1000);
@@ -78,6 +90,7 @@ export async function canJoinRoom(appointmentId: string, userId: string) {
     videoSession = await createVideoRoom(appointmentId);
   }
 
+  // Primeiro acesso: marca consulta como em andamento
   if (appointment.status === AppointmentStatus.CONFIRMED) {
     await prisma.appointment.update({
       where: { id: appointmentId },
@@ -96,6 +109,7 @@ export async function canJoinRoom(appointmentId: string, userId: string) {
   };
 }
 
+/** Encerra sessão de vídeo e marca consulta como concluída */
 export async function endVideoSession(appointmentId: string, userId: string) {
   const appointment = await prisma.appointment.findUnique({
     where: { id: appointmentId },

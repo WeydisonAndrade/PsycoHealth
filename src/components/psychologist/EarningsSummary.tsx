@@ -1,3 +1,7 @@
+/**
+ * Resumo de ganhos e histórico de repasses do psicólogo.
+ * Usado em src/app/dashboard/psychologist/page.tsx; recebe dados calculados no servidor.
+ */
 import { Card } from "@/components/ui/Card";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
 
@@ -18,6 +22,7 @@ interface EarningsSummaryProps {
 }
 
 export function EarningsSummary({ totalEarnings, totalSessions, payments }: EarningsSummaryProps) {
+  /* --- Renderização --- */
   return (
     <div>
       <div className="grid-2 mb-3">

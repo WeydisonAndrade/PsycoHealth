@@ -1,3 +1,9 @@
+// =============================================================================
+// Schema Prisma — Modelo de dados do MVP PsycoHealth
+// Define usuários, perfis, agendamentos, pagamentos (com comissão) e vídeo.
+// Banco: SQLite em desenvolvimento (DATABASE_URL no .env)
+// =============================================================================
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,18 +13,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Papéis de acesso na plataforma
 enum UserRole {
-  PATIENT
-  PSYCHOLOGIST
-  ADMIN
+  PATIENT       // Paciente que agenda consultas
+  PSYCHOLOGIST  // Profissional que atende
+  ADMIN         // Reservado para gestão futura
 }
 
+// Ciclo de vida de uma consulta agendada
 enum AppointmentStatus {
-  PENDING_PAYMENT
-  CONFIRMED
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
+  PENDING_PAYMENT // Criada, aguardando pagamento do paciente
+  CONFIRMED       // Paga e confirmada
+  IN_PROGRESS     // Paciente/psicólogo entraram na sala de vídeo
+  COMPLETED       // Sessão encerrada
+  CANCELLED       // Cancelada por paciente ou psicólogo
 }
 
 enum PaymentStatus {
@@ -28,10 +36,11 @@ enum PaymentStatus {
   REFUNDED
 }
 
+// Conta base — autenticação compartilhada entre pacientes e psicólogos
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
-  passwordHash String
+  passwordHash String   // bcrypt — nunca armazenar senha em texto puro
   name         String
   role         UserRole
   createdAt    DateTime @default(now())
@@ -41,12 +50,13 @@ model User {
   patientProfile      PatientProfile?
 }
 
+// Dados profissionais exibidos no marketplace e no dashboard
 model PsychologistProfile {
   id             String   @id @default(cuid())
   userId         String   @unique
-  crp            String   @unique
+  crp            String   @unique // Registro profissional (validado no cadastro)
   bio            String   @default("")
-  specialties    String   @default("[]")
+  specialties    String   @default("[]") // JSON serializado (SQLite não tem array nativo)
   sessionPrice   Float    @default(150)
   photoUrl       String?
   isActive       Boolean  @default(true)
@@ -70,11 +80,12 @@ model PatientProfile {
   appointments Appointment[] @relation("PatientAppointments")
 }
 
+// Grade semanal de atendimento — usada para calcular slots disponíveis
 model AvailabilitySlot {
   id             String @id @default(cuid())
   psychologistId String
-  dayOfWeek      Int
-  startTime      String
+  dayOfWeek      Int    // 0=Domingo … 6=Sábado
+  startTime      String // Formato "HH:mm"
   endTime        String
 
   psychologist PsychologistProfile @relation(fields: [psychologistId], references: [id], onDelete: Cascade)
@@ -82,6 +93,7 @@ model AvailabilitySlot {
   @@index([psychologistId])
 }
 
+// Consulta entre um psicólogo e um paciente
 model Appointment {
   id             String            @id @default(cuid())
   psychologistId String
@@ -102,12 +114,13 @@ model Appointment {
   @@index([patientId])
 }
 
+// Pagamento vinculado à consulta — registra split 80/20 automaticamente
 model Payment {
   id                 String        @id @default(cuid())
   appointmentId      String        @unique
-  totalAmount        Float
-  platformCommission Float
-  psychologistPayout Float
+  totalAmount        Float         // Valor pago pelo paciente
+  platformCommission Float         // 20% retido pela plataforma
+  psychologistPayout Float         // 80% repassado ao psicólogo
   commissionRate     Float         @default(0.20)
   status             PaymentStatus @default(PENDING)
   paidAt             DateTime?
@@ -117,10 +130,11 @@ model Payment {
   appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
 }
 
+// Sala de vídeo (Jitsi Meet) criada após confirmação do pagamento
 model VideoSession {
   id            String    @id @default(cuid())
   appointmentId String    @unique
-  roomId        String    @unique
+  roomId        String    @unique // Identificador usado na URL do Jitsi
   startedAt     DateTime?
   endedAt       DateTime?
   createdAt     DateTime  @default(now())

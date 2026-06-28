@@ -1,3 +1,7 @@
+/**
+ * Navegação do cabeçalho com links condicionais conforme autenticação e papel do usuário.
+ * Usado por Header; exibe login/cadastro ou área do usuário + logout.
+ */
 "use client";
 
 import Link from "next/link";
@@ -10,14 +14,17 @@ interface HeaderNavProps {
 }
 
 export function HeaderNav({ session }: HeaderNavProps) {
+  /* --- Estado e hooks --- */
   const router = useRouter();
 
+  /* --- Handlers de eventos --- */
   async function handleLogout() {
     await fetch("/api/auth/session", { method: "POST" });
     router.push("/");
     router.refresh();
   }
 
+  /* --- Renderização --- */
   return (
     <nav className="nav-actions">
       <ul className="nav-list">

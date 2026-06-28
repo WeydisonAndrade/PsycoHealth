@@ -1,3 +1,7 @@
+/**
+ * Formulário de cadastro de psicólogo com CRP, preço, bio e especialidades.
+ * Usado em src/app/register/psychologist/page.tsx; redireciona para /dashboard/psychologist.
+ */
 "use client";
 
 import { useState } from "react";
@@ -10,6 +14,7 @@ import { Card } from "@/components/ui/Card";
 import { SPECIALTY_OPTIONS } from "@/lib/utils";
 
 export function RegisterPsychologistForm() {
+  /* --- Estado e hooks --- */
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -21,6 +26,7 @@ export function RegisterPsychologistForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  /* --- Handlers de eventos --- */
   function toggleSpecialty(s: string) {
     setSpecialties((prev) =>
       prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]
@@ -68,6 +74,7 @@ export function RegisterPsychologistForm() {
     }
   }
 
+  /* --- Renderização --- */
   return (
     <Card
       title="Cadastro de Psicólogo"

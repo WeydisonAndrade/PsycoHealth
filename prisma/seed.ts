@@ -1,11 +1,23 @@
+/**
+ * Seed de demonstração — popula o banco com contas de teste.
+ * Executar: npm run db:seed
+ *
+ * Cria:
+ * - 1 psicólogo com disponibilidade semanal (seg–sex)
+ * - 1 paciente
+ * Senha padrão: senha123
+ */
+
 import { PrismaClient, UserRole } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
+  // Hash único reutilizado nas duas contas de demo
   const passwordHash = await bcrypt.hash("senha123", 12);
 
+  // --- Psicólogo de demonstração ---
   const psychologist = await prisma.user.upsert({
     where: { email: "psicologo@psycohealth.com" },
     update: {},
@@ -26,46 +38,23 @@ async function main() {
     include: { psychologistProfile: true },
   });
 
+  // Recria slots de disponibilidade a cada seed (idempotente)
   if (psychologist.psychologistProfile) {
     await prisma.availabilitySlot.deleteMany({
       where: { psychologistId: psychologist.psychologistProfile.id },
     });
     await prisma.availabilitySlot.createMany({
       data: [
-        {
-          psychologistId: psychologist.psychologistProfile.id,
-          dayOfWeek: 1,
-          startTime: "09:00",
-          endTime: "17:00",
-        },
-        {
-          psychologistId: psychologist.psychologistProfile.id,
-          dayOfWeek: 2,
-          startTime: "09:00",
-          endTime: "17:00",
-        },
-        {
-          psychologistId: psychologist.psychologistProfile.id,
-          dayOfWeek: 3,
-          startTime: "14:00",
-          endTime: "20:00",
-        },
-        {
-          psychologistId: psychologist.psychologistProfile.id,
-          dayOfWeek: 4,
-          startTime: "09:00",
-          endTime: "17:00",
-        },
-        {
-          psychologistId: psychologist.psychologistProfile.id,
-          dayOfWeek: 5,
-          startTime: "09:00",
-          endTime: "12:00",
-        },
+        { psychologistId: psychologist.psychologistProfile.id, dayOfWeek: 1, startTime: "09:00", endTime: "17:00" },
+        { psychologistId: psychologist.psychologistProfile.id, dayOfWeek: 2, startTime: "09:00", endTime: "17:00" },
+        { psychologistId: psychologist.psychologistProfile.id, dayOfWeek: 3, startTime: "14:00", endTime: "20:00" },
+        { psychologistId: psychologist.psychologistProfile.id, dayOfWeek: 4, startTime: "09:00", endTime: "17:00" },
+        { psychologistId: psychologist.psychologistProfile.id, dayOfWeek: 5, startTime: "09:00", endTime: "12:00" },
       ],
     });
   }
 
+  // --- Paciente de demonstração ---
   await prisma.user.upsert({
     where: { email: "paciente@psycohealth.com" },
     update: {},

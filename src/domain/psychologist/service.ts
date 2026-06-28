@@ -1,7 +1,13 @@
+/**
+ * Domínio: Psicólogo
+ * Listagem pública, perfil, edição, disponibilidade e relatório de ganhos.
+ */
+
 import { prisma } from "@/lib/db";
 import { parseSpecialties, stringifySpecialties } from "@/lib/utils";
 import type { UpdateProfileInput, SetAvailabilityInput } from "./schemas";
 
+/** Lista psicólogos ativos para o marketplace, com filtro opcional por especialidade */
 export async function listPsychologists(filters?: { specialty?: string }) {
   const profiles = await prisma.psychologistProfile.findMany({
     where: {
@@ -17,12 +23,14 @@ export async function listPsychologists(filters?: { specialty?: string }) {
     orderBy: { createdAt: "desc" },
   });
 
+  // Deserializa especialidades JSON → array para a UI
   return profiles.map((p) => ({
     ...p,
     specialties: parseSpecialties(p.specialties),
   }));
 }
 
+/** Perfil público exibido em /psychologists/[id] */
 export async function getPublicProfile(psychologistId: string) {
   const profile = await prisma.psychologistProfile.findUnique({
     where: { id: psychologistId, isActive: true },
@@ -40,6 +48,7 @@ export async function getPublicProfile(psychologistId: string) {
   };
 }
 
+/** Perfil do psicólogo logado (dashboard) */
 export async function getProfileByUserId(userId: string) {
   const profile = await prisma.psychologistProfile.findUnique({
     where: { userId },
@@ -57,6 +66,7 @@ export async function getProfileByUserId(userId: string) {
   };
 }
 
+/** Atualiza bio, preço, foto e especialidades */
 export async function updateProfile(userId: string, input: UpdateProfileInput) {
   const profile = await prisma.psychologistProfile.findUnique({ where: { userId } });
   if (!profile) throw new Error("Perfil não encontrado");
@@ -81,6 +91,7 @@ export async function updateProfile(userId: string, input: UpdateProfileInput) {
   };
 }
 
+/** Substitui todos os slots de disponibilidade em transação atômica */
 export async function setAvailability(userId: string, input: SetAvailabilityInput) {
   const profile = await prisma.psychologistProfile.findUnique({ where: { userId } });
   if (!profile) throw new Error("Perfil não encontrado");
@@ -102,6 +113,7 @@ export async function setAvailability(userId: string, input: SetAvailabilityInpu
   return getProfileByUserId(userId);
 }
 
+/** Soma repasses (80%) de consultas pagas — exibido no dashboard */
 export async function getPsychologistEarnings(userId: string) {
   const profile = await prisma.psychologistProfile.findUnique({ where: { userId } });
   if (!profile) throw new Error("Perfil não encontrado");

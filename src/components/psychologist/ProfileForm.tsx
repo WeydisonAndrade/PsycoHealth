@@ -1,3 +1,7 @@
+/**
+ * Formulário de edição do perfil profissional (bio, preço, foto e especialidades).
+ * Usado em src/app/dashboard/psychologist/page.tsx; persiste via PATCH /api/psychologists/me.
+ */
 "use client";
 
 import { useState } from "react";
@@ -20,6 +24,7 @@ interface ProfileFormProps {
 }
 
 export function ProfileForm({ initial, onSaved }: ProfileFormProps) {
+  /* --- Estado e hooks --- */
   const [bio, setBio] = useState(initial.bio);
   const [sessionPrice, setSessionPrice] = useState(initial.sessionPrice);
   const [photoUrl, setPhotoUrl] = useState(initial.photoUrl ?? "");
@@ -28,6 +33,7 @@ export function ProfileForm({ initial, onSaved }: ProfileFormProps) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  /* --- Handlers de eventos --- */
   function toggleSpecialty(s: string) {
     setSpecialties((prev) =>
       prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]
@@ -62,6 +68,7 @@ export function ProfileForm({ initial, onSaved }: ProfileFormProps) {
     }
   }
 
+  /* --- Renderização --- */
   return (
     <Card title="Editar perfil">
       {error && <Alert type="error">{error}</Alert>}

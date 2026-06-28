@@ -1,3 +1,7 @@
+/**
+ * Card de consulta com status, participantes e ações (pagar ou entrar na videochamada).
+ * Usado nos dashboards de paciente e psicólogo (src/app/dashboard/patient e psychologist).
+ */
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { Badge, statusToBadge } from "@/components/ui/Badge";
@@ -27,6 +31,7 @@ export function AppointmentCard({
 }: AppointmentCardProps) {
   const statusBadge = statusToBadge(status);
 
+  /* --- Renderização --- */
   return (
     <Card>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem" }}>

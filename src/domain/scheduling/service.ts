@@ -1,15 +1,26 @@
+/**
+ * Domínio: Agendamento
+ * Calcula slots livres, reserva consultas e gerencia cancelamentos.
+ */
+
 import { AppointmentStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { createPaymentForAppointment } from "@/domain/payment";
 import type { BookAppointmentInput } from "./schemas";
 
+/** Duração padrão de cada sessão em minutos */
 const SESSION_DURATION_MIN = 50;
 
+/** Converte "HH:mm" em horas e minutos numéricos */
 function parseTime(time: string): { hours: number; minutes: number } {
   const [hours, minutes] = time.split(":").map(Number);
   return { hours, minutes };
 }
 
+/**
+ * Verifica se a data/hora escolhida cabe dentro de algum slot
+ * de disponibilidade do psicólogo (considerando duração da sessão).
+ */
 function isWithinAvailability(
   date: Date,
   slots: { dayOfWeek: number; startTime: string; endTime: string }[]
@@ -29,6 +40,10 @@ function isWithinAvailability(
   });
 }
 
+/**
+ * Gera slots de 50 min nos próximos N dias com base na grade semanal.
+ * Remove horários já reservados ou no passado.
+ */
 export async function getAvailableSlots(
   psychologistId: string,
   fromDate: Date,
@@ -44,6 +59,7 @@ export async function getAvailableSlots(
   const slots: { datetime: string; available: boolean }[] = [];
   const now = new Date();
 
+  // Percorre cada dia do intervalo
   for (let d = 0; d < days; d++) {
     const date = new Date(fromDate);
     date.setDate(date.getDate() + d);
@@ -51,6 +67,7 @@ export async function getAvailableSlots(
 
     const daySlots = profile.availability.filter((s) => s.dayOfWeek === date.getDay());
 
+    // Dentro de cada bloco de disponibilidade, gera slots de SESSION_DURATION_MIN
     for (const avail of daySlots) {
       const { hours: startH, minutes: startM } = parseTime(avail.startTime);
       const { hours: endH, minutes: endM } = parseTime(avail.endTime);
@@ -73,6 +90,7 @@ export async function getAvailableSlots(
     }
   }
 
+  // Marca como indisponível os horários já agendados
   const existing = await prisma.appointment.findMany({
     where: {
       psychologistId,
@@ -90,6 +108,9 @@ export async function getAvailableSlots(
   }));
 }
 
+/**
+ * Reserva consulta: valida disponibilidade, cria Appointment e Payment pendente.
+ */
 export async function bookAppointment(patientUserId: string, input: BookAppointmentInput) {
   const patient = await prisma.patientProfile.findUnique({
     where: { userId: patientUserId },
@@ -113,6 +134,7 @@ export async function bookAppointment(patientUserId: string, input: BookAppointm
     throw new Error("Horário fora da disponibilidade do psicólogo");
   }
 
+  // Evita double-booking no mesmo horário
   const conflict = await prisma.appointment.findFirst({
     where: {
       psychologistId: input.psychologistId,
@@ -138,6 +160,7 @@ export async function bookAppointment(patientUserId: string, input: BookAppointm
     },
   });
 
+  // Cria registro de pagamento com split 80/20
   const payment = await createPaymentForAppointment(
     appointment.id,
     psychologist.sessionPrice
@@ -146,6 +169,7 @@ export async function bookAppointment(patientUserId: string, input: BookAppointm
   return { appointment, payment };
 }
 
+/** Busca consulta com participantes, pagamento e sessão de vídeo */
 export async function getAppointmentById(appointmentId: string) {
   return prisma.appointment.findUnique({
     where: { id: appointmentId },
@@ -158,6 +182,7 @@ export async function getAppointmentById(appointmentId: string) {
   });
 }
 
+/** Histórico de consultas do paciente logado */
 export async function getPatientAppointments(patientUserId: string) {
   const patient = await prisma.patientProfile.findUnique({
     where: { userId: patientUserId },
@@ -175,6 +200,7 @@ export async function getPatientAppointments(patientUserId: string) {
   });
 }
 
+/** Histórico de consultas do psicólogo logado */
 export async function getPsychologistAppointments(psychologistUserId: string) {
   const profile = await prisma.psychologistProfile.findUnique({
     where: { userId: psychologistUserId },
@@ -192,6 +218,7 @@ export async function getPsychologistAppointments(psychologistUserId: string) {
   });
 }
 
+/** Cancelamento — permitido apenas a participantes e antes de IN_PROGRESS/COMPLETED */
 export async function cancelAppointment(appointmentId: string, userId: string) {
   const appointment = await getAppointmentById(appointmentId);
   if (!appointment) throw new Error("Consulta não encontrada");

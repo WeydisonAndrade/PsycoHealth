@@ -1,3 +1,7 @@
+/**
+ * Painel do psicólogo autenticado.
+ * Reúne ganhos, edição de perfil, disponibilidade e lista de consultas agendadas.
+ */
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { getProfileByUserId, getPsychologistEarnings } from "@/domain/psychologist";
@@ -8,6 +12,7 @@ import { EarningsSummary } from "@/components/psychologist/EarningsSummary";
 import { AppointmentCard } from "@/components/scheduling/AppointmentCard";
 
 export default async function PsychologistDashboardPage() {
+  /** Guardas de rota — redireciona visitantes e pacientes para suas áreas */
   const session = await getSession();
   if (!session) redirect("/login");
   if (session.role !== "PSYCHOLOGIST") redirect("/dashboard/patient");
@@ -24,6 +29,7 @@ export default async function PsychologistDashboardPage() {
         <h1 className="page-title">Olá, {session.name}</h1>
         <p className="page-subtitle">Painel do psicólogo — CRP {profile.crp}</p>
 
+        {/* Resumo financeiro — total recebido e histórico de pagamentos */}
         <div className="mb-3">
           <EarningsSummary
             totalEarnings={earnings.totalEarnings}
@@ -32,11 +38,13 @@ export default async function PsychologistDashboardPage() {
           />
         </div>
 
+        {/* Edição de perfil profissional e grade de horários disponíveis */}
         <div className="grid-2 mb-3">
           <ProfileForm initial={profile} />
           <AvailabilityEditor initialSlots={profile.availability} />
         </div>
 
+        {/* Lista de consultas com pacientes */}
         <h2 className="section-title" style={{ textAlign: "left", fontSize: "1.75rem", marginBottom: "1rem" }}>
           Minhas consultas
         </h2>

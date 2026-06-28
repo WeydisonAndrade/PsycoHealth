@@ -1,3 +1,7 @@
+/**
+ * Sala de videochamada integrada com Jitsi Meet para consultas online.
+ * Usado em src/app/session/[id]/page.tsx; obtém URL via GET /api/video/:appointmentId.
+ */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,6 +16,7 @@ interface VideoRoomProps {
 }
 
 export function VideoRoom({ appointmentId, userRole = "PATIENT" }: VideoRoomProps) {
+  /* --- Estado e hooks --- */
   const router = useRouter();
   const [jitsiUrl, setJitsiUrl] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -42,6 +47,7 @@ export function VideoRoom({ appointmentId, userRole = "PATIENT" }: VideoRoomProp
     load();
   }, [appointmentId]);
 
+  /* --- Handlers de eventos --- */
   async function handleEnd() {
     setEnding(true);
     try {
@@ -55,6 +61,7 @@ export function VideoRoom({ appointmentId, userRole = "PATIENT" }: VideoRoomProp
     }
   }
 
+  /* --- Renderização --- */
   if (loading) {
     return <p style={{ color: "var(--text-muted)" }}>Preparando sala de vídeo...</p>;
   }

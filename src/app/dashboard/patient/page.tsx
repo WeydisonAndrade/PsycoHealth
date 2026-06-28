@@ -1,3 +1,7 @@
+/**
+ * Painel do paciente autenticado.
+ * Lista consultas agendadas com status de pagamento e link para nova consulta.
+ */
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getSession } from "@/lib/session";
@@ -6,6 +10,7 @@ import { AppointmentCard } from "@/components/scheduling/AppointmentCard";
 import { Button } from "@/components/ui/Button";
 
 export default async function PatientDashboardPage() {
+  /** Guardas de rota — redireciona visitantes e psicólogos para suas áreas */
   const session = await getSession();
   if (!session) redirect("/login");
   if (session.role !== "PATIENT") redirect("/dashboard/psychologist");
@@ -18,6 +23,7 @@ export default async function PatientDashboardPage() {
         <h1 className="page-title">Olá, {session.name}</h1>
         <p className="page-subtitle">Suas consultas e agendamentos</p>
 
+        {/* Ação rápida para iniciar novo agendamento */}
         <div className="mb-3">
           <Link href="/psychologists">
             <Button>Agendar nova consulta</Button>
@@ -25,6 +31,7 @@ export default async function PatientDashboardPage() {
         </div>
 
         {appointments.length === 0 ? (
+          /* Estado vazio com link para o catálogo de psicólogos */
           <div className="empty-state">
             <p>Você ainda não tem consultas agendadas.</p>
             <Link href="/psychologists" className="mt-2" style={{ display: "inline-block" }}>
@@ -32,6 +39,7 @@ export default async function PatientDashboardPage() {
             </Link>
           </div>
         ) : (
+          /* Lista cronológica de consultas do paciente */
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             {appointments.map((a) => (
               <AppointmentCard

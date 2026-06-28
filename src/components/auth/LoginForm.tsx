@@ -1,3 +1,7 @@
+/**
+ * Formulário de login com e-mail e senha.
+ * Usado em src/app/login/page.tsx; redireciona para o dashboard conforme o papel do usuário.
+ */
 "use client";
 
 import { useState } from "react";
@@ -9,12 +13,14 @@ import { Alert } from "@/components/ui/Alert";
 import { Card } from "@/components/ui/Card";
 
 export function LoginForm() {
+  /* --- Estado e hooks --- */
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  /* --- Handlers de eventos --- */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
@@ -43,6 +49,7 @@ export function LoginForm() {
     }
   }
 
+  /* --- Renderização --- */
   return (
     <Card title="Entrar" className="auth-card">
       {error && <Alert type="error">{error}</Alert>}

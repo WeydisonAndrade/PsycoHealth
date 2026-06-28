@@ -1,3 +1,7 @@
+/**
+ * Formulário de cadastro de paciente (nome, e-mail, telefone e senha).
+ * Usado em src/app/register/patient/page.tsx; redireciona para /dashboard/patient após sucesso.
+ */
 "use client";
 
 import { useState } from "react";
@@ -9,6 +13,7 @@ import { Alert } from "@/components/ui/Alert";
 import { Card } from "@/components/ui/Card";
 
 export function RegisterPatientForm() {
+  /* --- Estado e hooks --- */
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -17,6 +22,7 @@ export function RegisterPatientForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  /* --- Handlers de eventos --- */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
@@ -44,6 +50,7 @@ export function RegisterPatientForm() {
     }
   }
 
+  /* --- Renderização --- */
   return (
     <Card title="Cadastro de Paciente" subtitle="Crie sua conta para agendar consultas" className="auth-card">
       {error && <Alert type="error">{error}</Alert>}

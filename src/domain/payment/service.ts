@@ -1,8 +1,17 @@
+/**
+ * Domínio: Pagamento
+ * Cria cobrança ao agendar, processa pagamento (MVP simulado) e confirma consulta.
+ */
+
 import { PaymentStatus, AppointmentStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { calculateSplit } from "./commission";
 import { createVideoRoom } from "@/domain/video";
 
+/**
+ * Chamado automaticamente após bookAppointment.
+ * Persiste valores do split 80/20 no banco.
+ */
 export async function createPaymentForAppointment(
   appointmentId: string,
   totalAmount: number
@@ -30,7 +39,12 @@ export async function getPaymentByAppointmentId(appointmentId: string) {
 
 /**
  * Simula confirmação de pagamento (MVP).
- * Em produção, substituir por webhook do gateway (Stripe, Mercado Pago, etc.).
+ * Fluxo real: webhook do gateway (Stripe, Mercado Pago) chama lógica equivalente.
+ *
+ * Efeitos colaterais:
+ * 1. Marca Payment como PAID
+ * 2. Confirma Appointment
+ * 3. Cria sala de vídeo Jitsi
  */
 export async function processPayment(appointmentId: string, patientUserId: string) {
   const appointment = await prisma.appointment.findUnique({
@@ -50,6 +64,7 @@ export async function processPayment(appointmentId: string, patientUserId: strin
     return appointment.payment;
   }
 
+  // Transação atômica: pagamento + confirmação da consulta
   const [payment] = await prisma.$transaction([
     prisma.payment.update({
       where: { id: appointment.payment.id },
@@ -69,6 +84,7 @@ export async function processPayment(appointmentId: string, patientUserId: strin
   return payment;
 }
 
+/** Retorna pagamento com breakdown do split para exibir no checkout */
 export async function getPaymentSummary(appointmentId: string) {
   const payment = await getPaymentByAppointmentId(appointmentId);
   if (!payment) return null;

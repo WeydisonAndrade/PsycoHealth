@@ -1,3 +1,8 @@
+/**
+ * Domínio: Autenticação
+ * Regras de cadastro (paciente/psicólogo), login e geração de sessão JWT.
+ */
+
 import bcrypt from "bcryptjs";
 import { UserRole } from "@prisma/client";
 import { prisma } from "@/lib/db";
@@ -9,6 +14,7 @@ import type {
   RegisterPsychologistInput,
 } from "./schemas";
 
+/** Erro de negócio com código para mapear status HTTP na API */
 export class AuthError extends Error {
   constructor(
     message: string,
@@ -19,6 +25,9 @@ export class AuthError extends Error {
   }
 }
 
+/**
+ * Cadastra paciente: User + PatientProfile + sessão automática.
+ */
 export async function registerPatient(input: RegisterPatientInput) {
   const existing = await prisma.user.findUnique({ where: { email: input.email } });
   if (existing) {
@@ -50,6 +59,9 @@ export async function registerPatient(input: RegisterPatientInput) {
   return { user, token };
 }
 
+/**
+ * Cadastra psicólogo: valida CRP único, cria perfil profissional e sessão.
+ */
 export async function registerPsychologist(input: RegisterPsychologistInput) {
   const existingEmail = await prisma.user.findUnique({ where: { email: input.email } });
   if (existingEmail) {
@@ -93,6 +105,9 @@ export async function registerPsychologist(input: RegisterPsychologistInput) {
   return { user, token };
 }
 
+/**
+ * Autentica por e-mail/senha e retorna usuário + token JWT.
+ */
 export async function login(input: LoginInput) {
   const user = await prisma.user.findUnique({
     where: { email: input.email },

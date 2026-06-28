@@ -1,9 +1,15 @@
+/**
+ * Página inicial (landing page) da plataforma PsycoHealth.
+ * Apresenta proposta de valor, fluxo de uso em três passos e convite
+ * para cadastro de psicólogos.
+ */
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 
 export default function HomePage() {
   return (
     <>
+      {/* Seção hero — mensagem principal e CTAs primários */}
       <section className="hero">
         <div className="container">
           <div className="hero-content">
@@ -26,6 +32,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Seção "Como funciona" — explica o fluxo em três etapas */}
       <section className="features-section">
         <div className="container">
           <h2 className="section-title">Como funciona</h2>
@@ -49,6 +56,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Seção de conversão para psicólogos — modelo de repasse 80/20 */}
       <section className="features-section">
         <div className="container text-center">
           <h2 className="section-title">Para psicólogos</h2>
