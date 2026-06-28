@@ -27,10 +27,10 @@ export function EarningsSummary({ totalEarnings, totalSessions, payments }: Earn
     <div>
       <div className="grid-2 mb-3">
         <Card title="Total recebido">
-          <p className="price">{formatCurrency(totalEarnings)}</p>
+          <p className="earnings-price">{formatCurrency(totalEarnings)}</p>
         </Card>
         <Card title="Consultas pagas">
-          <p className="price">{totalSessions}</p>
+          <p className="earnings-price">{totalSessions}</p>
         </Card>
       </div>
 

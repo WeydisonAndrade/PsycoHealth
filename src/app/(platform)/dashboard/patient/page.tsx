@@ -26,21 +26,19 @@ export default async function PatientDashboardPage() {
         {/* Ação rápida para iniciar novo agendamento */}
         <div className="mb-3">
           <Link href="/psychologists">
-            <Button>Agendar nova consulta</Button>
+            <Button fullWidth>Agendar nova consulta</Button>
           </Link>
         </div>
 
         {appointments.length === 0 ? (
-          /* Estado vazio com link para o catálogo de psicólogos */
           <div className="empty-state">
             <p>Você ainda não tem consultas agendadas.</p>
-            <Link href="/psychologists" className="mt-2" style={{ display: "inline-block" }}>
+            <Link href="/psychologists" className="mt-2">
               Encontrar psicólogo
             </Link>
           </div>
         ) : (
-          /* Lista cronológica de consultas do paciente */
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <div className="stack">
             {appointments.map((a) => (
               <AppointmentCard
                 key={a.id}

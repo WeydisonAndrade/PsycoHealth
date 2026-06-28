@@ -45,13 +45,11 @@ export default async function PsychologistDashboardPage() {
         </div>
 
         {/* Lista de consultas com pacientes */}
-        <h2 className="section-title" style={{ textAlign: "left", fontSize: "1.75rem", marginBottom: "1rem" }}>
-          Minhas consultas
-        </h2>
+        <h2 className="section-heading">Minhas consultas</h2>
         {appointments.length === 0 ? (
           <div className="empty-state">Nenhuma consulta agendada</div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <div className="stack">
             {appointments.map((a) => (
               <AppointmentCard
                 key={a.id}

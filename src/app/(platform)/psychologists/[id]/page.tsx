@@ -47,14 +47,13 @@ export default async function PsychologistProfilePage({
               </div>
             </Card>
 
-            <p className="price mb-3">{formatCurrency(profile.sessionPrice)} por sessão</p>
+            <p className="price-display mb-3">{formatCurrency(profile.sessionPrice)} por sessão</p>
           </div>
 
-          {/* Coluna direita — ação de agendamento conforme papel do usuário */}
           <Card title="Agendar consulta">
             {!session ? (
               <>
-                <p style={{ color: "var(--text-muted)", marginBottom: "1rem" }}>
+                <p className="muted-text mb-2">
                   Faça login como paciente para agendar uma consulta.
                 </p>
                 <Link href="/login">
@@ -62,7 +61,7 @@ export default async function PsychologistProfilePage({
                 </Link>
               </>
             ) : session.role !== "PATIENT" ? (
-              <p style={{ color: "var(--text-muted)" }}>
+              <p className="muted-text">
                 Apenas pacientes podem agendar consultas.
               </p>
             ) : (

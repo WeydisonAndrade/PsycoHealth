@@ -31,7 +31,12 @@ export function PsychologistCard({
         <h3 className="card-title">{name}</h3>
         <p className="card-subtitle">CRP {crp}</p>
       </div>
-      {bio && <p style={{ color: "var(--text-muted)", fontSize: "0.95rem" }}>{bio.slice(0, 120)}{bio.length > 120 ? "..." : ""}</p>}
+      {bio && (
+        <p className="card-excerpt">
+          {bio.slice(0, 120)}
+          {bio.length > 120 ? "..." : ""}
+        </p>
+      )}
       <div className="tags">
         {specialties.slice(0, 3).map((s) => (
           <span key={s} className="tag">

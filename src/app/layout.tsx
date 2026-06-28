@@ -26,6 +26,12 @@ export const metadata: Metadata = {
     "PsicoHealth - Psicologia e saúde mental. Atendimento humanizado inspirado no cuidado clássico com a mente.",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover" as const,
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" className={`${display.variable} ${body.variable}`}>

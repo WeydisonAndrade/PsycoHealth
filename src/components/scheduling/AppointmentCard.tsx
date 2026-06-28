@@ -34,25 +34,23 @@ export function AppointmentCard({
   /* --- Renderização --- */
   return (
     <Card>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem" }}>
+      <div className="appointment-card-header">
         <div>
-          <p style={{ fontFamily: "var(--font-display)", fontSize: "1.25rem", color: "var(--gold)" }}>
-            {formatDateTime(scheduledAt)}
-          </p>
+          <p className="appointment-card-datetime">{formatDateTime(scheduledAt)}</p>
           {psychologistName && (
-            <p style={{ color: "var(--text-muted)" }}>Psicólogo: {psychologistName}</p>
+            <p className="appointment-card-meta">Psicólogo: {psychologistName}</p>
           )}
           {patientName && (
-            <p style={{ color: "var(--text-muted)" }}>Paciente: {patientName}</p>
+            <p className="appointment-card-meta">Paciente: {patientName}</p>
           )}
           {sessionPrice !== undefined && (
-            <p style={{ color: "var(--text-muted)" }}>{formatCurrency(sessionPrice)}</p>
+            <p className="appointment-card-meta">{formatCurrency(sessionPrice)}</p>
           )}
         </div>
         <Badge variant={statusBadge.variant}>{statusBadge.label}</Badge>
       </div>
 
-      <div className="mt-2" style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+      <div className="mt-2 appointment-card-actions">
         {role === "PATIENT" && status === "PENDING_PAYMENT" && (
           <Link href={`/appointments/${id}/payment`}>
             <Button size="sm">Pagar consulta</Button>
