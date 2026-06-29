@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import type { CalendarEvent, CalendarSlot } from "@/domain/scheduling";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
+import { Textarea } from "@/components/ui/Input";
 import { daysInMonthView } from "@/lib/calendar-utils";
 import { SchedulingCalendar, useCalendarMonth } from "./SchedulingCalendar";
 
@@ -25,6 +26,7 @@ export function PatientCalendarPanel() {
   const [psychologists, setPsychologists] = useState<PsychologistOption[]>([]);
   const [selectedPsychologistId, setSelectedPsychologistId] = useState("");
   const [selectedDatetime, setSelectedDatetime] = useState("");
+  const [concerns, setConcerns] = useState("");
   const [loadingEvents, setLoadingEvents] = useState(true);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [booking, setBooking] = useState(false);
@@ -108,6 +110,7 @@ export function PatientCalendarPanel() {
         body: JSON.stringify({
           psychologistId: selectedPsychologistId,
           scheduledAt: selectedDatetime,
+          concerns: concerns || undefined,
         }),
       });
       const data = await res.json();
@@ -197,6 +200,14 @@ export function PatientCalendarPanel() {
             month={availabilityMonth}
             onMonthChange={setAvailabilityMonth}
             loading={loadingSlots}
+          />
+
+          <Textarea
+            label="Breve relato sobre o que você gostaria de trabalhar (opcional)"
+            value={concerns}
+            onChange={(e) => setConcerns(e.target.value)}
+            maxLength={500}
+            placeholder="Descreva brevemente seus principais desafios ou motivos da consulta"
           />
 
           <Button

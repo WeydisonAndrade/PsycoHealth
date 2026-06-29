@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { CalendarSlot } from "@/domain/scheduling";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
+import { Textarea } from "@/components/ui/Input";
 import { daysInMonthView } from "@/lib/calendar-utils";
 import { SchedulingCalendar, useCalendarMonth } from "./SchedulingCalendar";
 
@@ -76,6 +77,7 @@ interface BookAppointmentFormProps {
 
 export function BookAppointmentForm({ psychologistId, onBooked }: BookAppointmentFormProps) {
   const [selected, setSelected] = useState<string>("");
+  const [concerns, setConcerns] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -92,7 +94,11 @@ export function BookAppointmentForm({ psychologistId, onBooked }: BookAppointmen
       const res = await fetch("/api/appointments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ psychologistId, scheduledAt: selected }),
+        body: JSON.stringify({
+          psychologistId,
+          scheduledAt: selected,
+          concerns: concerns || undefined,
+        }),
       });
 
       const data = await res.json();
@@ -113,6 +119,13 @@ export function BookAppointmentForm({ psychologistId, onBooked }: BookAppointmen
     <div>
       {error && <Alert type="error">{error}</Alert>}
       <SlotPicker psychologistId={psychologistId} onSelect={setSelected} selected={selected} />
+      <Textarea
+        label="Breve relato sobre o que você gostaria de trabalhar (opcional)"
+        value={concerns}
+        onChange={(e) => setConcerns(e.target.value)}
+        maxLength={500}
+        placeholder="Descreva brevemente seus principais desafios ou motivos da consulta"
+      />
       <Button className="mt-2" onClick={handleBook} disabled={loading || !selected}>
         {loading ? "Agendando..." : "Confirmar horário"}
       </Button>

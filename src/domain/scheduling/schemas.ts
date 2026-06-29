@@ -8,6 +8,7 @@ import { z } from "zod";
 export const bookAppointmentSchema = z.object({
   psychologistId: z.string().min(1),
   scheduledAt: z.string().min(1, "Horário obrigatório"), // ISO 8601
+  concerns: z.string().max(500, "Máximo de 500 caracteres").optional(),
 });
 
 export type BookAppointmentInput = z.infer<typeof bookAppointmentSchema>;
@@ -24,6 +25,7 @@ export interface CalendarSlot {
   available: boolean;
   label?: string;
   appointmentId?: string;
+  patientConcerns?: string;
 }
 
 /** Consulta do paciente exibida no calendário */

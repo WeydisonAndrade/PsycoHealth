@@ -48,7 +48,7 @@ export function PsychologistCalendarPanel() {
         <div>
           <h2 className="card-title">Calendário de consultas</h2>
           <p className="card-subtitle">
-            Horários livres e consultas agendadas — atualizado automaticamente pelo sistema
+            Horários livres e consultas agendadas — passe o mouse sobre uma data ocupada para ver o relato do paciente
           </p>
         </div>
       </div>
@@ -60,6 +60,7 @@ export function PsychologistCalendarPanel() {
           month={month}
           onMonthChange={setMonth}
           loading={loading}
+          showPatientPreview
         />
       </div>
     </div>

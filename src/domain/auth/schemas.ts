@@ -17,6 +17,7 @@ export const registerPatientSchema = z.object({
   email: z.string().email("E-mail inválido"),
   password: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
   phone: z.string().optional(),
+  concerns: z.string().max(500, "Máximo de 500 caracteres").optional(),
 });
 
 /** Dados do formulário de cadastro de psicólogo (inclui CRP e especialidades) */

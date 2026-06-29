@@ -55,7 +55,7 @@ async function main() {
   }
 
   // --- Paciente de demonstração ---
-  await prisma.user.upsert({
+  const patientUser = await prisma.user.upsert({
     where: { email: "paciente@psycohealth.com" },
     update: {},
     create: {
@@ -64,10 +64,25 @@ async function main() {
       passwordHash,
       role: UserRole.PATIENT,
       patientProfile: {
-        create: { phone: "(11) 98765-4321" },
+        create: {
+          phone: "(11) 98765-4321",
+          concerns:
+            "Ansiedade intensa no trabalho, dificuldade para dormir e sensação constante de sobrecarga.",
+        },
       },
     },
+    include: { patientProfile: true },
   });
+
+  if (patientUser.patientProfile) {
+    await prisma.patientProfile.update({
+      where: { id: patientUser.patientProfile.id },
+      data: {
+        concerns:
+          "Ansiedade intensa no trabalho, dificuldade para dormir e sensação constante de sobrecarga.",
+      },
+    });
+  }
 
   console.log("Seed concluído:");
   console.log("  Psicólogo: psicologo@psycohealth.com / senha123");

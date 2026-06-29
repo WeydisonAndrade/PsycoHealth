@@ -5,6 +5,7 @@ export {
   getAvailableSlots,
   getCalendarSlots,
   getPatientCalendarEvents,
+  buildPatientPreview,
   bookAppointment,
   getAppointmentById,
   getPatientAppointments,

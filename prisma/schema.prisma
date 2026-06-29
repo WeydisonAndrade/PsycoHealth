@@ -73,6 +73,7 @@ model PatientProfile {
   userId    String   @unique
   phone     String?
   birthDate String?
+  concerns  String?  // Problemas ou motivos relatados pelo paciente
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -43,7 +43,7 @@ export async function registerPatient(input: RegisterPatientInput) {
       passwordHash,
       role: UserRole.PATIENT,
       patientProfile: {
-        create: { phone: input.phone },
+        create: { phone: input.phone, concerns: input.concerns },
       },
     },
     include: { patientProfile: true },

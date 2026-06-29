@@ -586,6 +586,20 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 0.35rem;
+  overflow: visible;
+}
+
+.calendar-day-wrap {
+  position: relative;
+  min-width: 0;
+}
+
+.calendar-day-wrap--booked .calendar-day {
+  cursor: help;
+}
+
+.calendar-day--booked:not(.calendar-day--selected) {
+  border-color: rgba(248, 113, 113, 0.55);
 }
 
 .calendar-day {
@@ -737,6 +751,67 @@
 .calendar-psychologist-hint {
   font-size: 0.9rem;
   color: var(--text-muted);
+}
+
+.calendar-preview-tooltip {
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  bottom: calc(100% + 0.5rem);
+  transform: translateX(-50%);
+  width: min(16rem, 70vw);
+  padding: 0.75rem;
+  background: var(--bg-deep);
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.calendar-preview-item + .calendar-preview-item {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-gold);
+}
+
+.calendar-preview-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+}
+
+.calendar-preview-header strong {
+  color: var(--gold);
+}
+
+.calendar-preview-header span {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.calendar-preview-text {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.slot-btn-wrap {
+  position: relative;
+  min-width: 0;
+}
+
+.slot-btn-wrap--booked {
+  cursor: help;
+}
+
+.slot-btn-wrap .calendar-preview-tooltip {
+  left: 0;
+  transform: none;
+  width: min(18rem, 90vw);
 }
 
 @media (min-width: 768px) {

@@ -8,6 +8,14 @@ import { prisma } from "@/lib/db";
 import { createPaymentForAppointment } from "@/domain/payment";
 import type { BookAppointmentInput } from "./schemas";
 
+/** Converte relato da consulta ou perfil em texto para preview do psicólogo */
+export function buildPatientPreview(
+  appointmentNotes: string | null | undefined,
+  profileConcerns: string | null | undefined
+): string {
+  return appointmentNotes?.trim() || profileConcerns?.trim() || "";
+}
+
 /** Duração padrão de cada sessão em minutos */
 const SESSION_DURATION_MIN = 50;
 
@@ -100,7 +108,13 @@ export async function getCalendarSlots(
     select: {
       id: true,
       scheduledAt: true,
-      patient: { include: { user: { select: { name: true } } } },
+      notes: true,
+      patient: {
+        select: {
+          concerns: true,
+          user: { select: { name: true } },
+        },
+      },
     },
   });
 
@@ -111,6 +125,9 @@ export async function getCalendarSlots(
   return slots.map((s) => {
     const booked = bookedMap.get(s.datetime);
     if (booked) {
+      const preview = options?.includeBookingDetails
+        ? buildPatientPreview(booked.notes, booked.patient.concerns)
+        : "";
       return {
         datetime: s.datetime,
         available: false,
@@ -118,6 +135,7 @@ export async function getCalendarSlots(
           ? booked.patient.user.name
           : "Ocupado",
         appointmentId: booked.id,
+        patientConcerns: preview || undefined,
       };
     }
     return s;
@@ -206,6 +224,8 @@ export async function bookAppointment(patientUserId: string, input: BookAppointm
     throw new Error("Horário já reservado");
   }
 
+  const concerns = input.concerns?.trim();
+
   const appointment = await prisma.appointment.create({
     data: {
       psychologistId: input.psychologistId,
@@ -213,12 +233,20 @@ export async function bookAppointment(patientUserId: string, input: BookAppointm
       scheduledAt,
       durationMin: SESSION_DURATION_MIN,
       status: AppointmentStatus.PENDING_PAYMENT,
+      notes: concerns || undefined,
     },
     include: {
       psychologist: { include: { user: { select: { name: true } } } },
       patient: { include: { user: { select: { name: true } } } },
     },
   });
+
+  if (concerns) {
+    await prisma.patientProfile.update({
+      where: { id: patient.id },
+      data: { concerns },
+    });
+  }
 
   // Cria registro de pagamento com split 80/20
   const payment = await createPaymentForAppointment(

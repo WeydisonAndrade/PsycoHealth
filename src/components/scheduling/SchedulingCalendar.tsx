@@ -18,6 +18,7 @@ import {
   toLocalDateKey,
 } from "@/lib/calendar-utils";
 import { Button } from "@/components/ui/Button";
+import { PatientPreviewTooltip } from "./PatientPreviewTooltip";
 
 interface SchedulingCalendarProps {
   slots?: CalendarSlot[];
@@ -28,6 +29,7 @@ interface SchedulingCalendarProps {
   month: Date;
   onMonthChange: (month: Date) => void;
   loading?: boolean;
+  showPatientPreview?: boolean;
 }
 
 export function SchedulingCalendar({
@@ -39,6 +41,7 @@ export function SchedulingCalendar({
   month,
   onMonthChange,
   loading = false,
+  showPatientPreview = false,
 }: SchedulingCalendarProps) {
   const grid = useMemo(() => getMonthGrid(month), [month]);
   const slotsByDay = useMemo(() => groupSlotsByDay(slots), [slots]);
@@ -46,6 +49,8 @@ export function SchedulingCalendar({
 
   const todayKey = toLocalDateKey(new Date());
   const [selectedDay, setSelectedDay] = useState<string | null>(todayKey);
+  const [hoveredDay, setHoveredDay] = useState<string | null>(null);
+  const [hoveredSlot, setHoveredSlot] = useState<string | null>(null);
 
   const daySlots = selectedDay ? (slotsByDay.get(selectedDay) ?? []) : [];
   const dayEvents = selectedDay ? (eventsByDay.get(selectedDay) ?? []) : [];
@@ -112,32 +117,54 @@ export function SchedulingCalendar({
         <div className="calendar-grid" role="grid" aria-label="Calendário mensal">
           {grid.map((cell, index) => {
             const isSelected = cell.dateKey === selectedDay;
+            const dayBookedSlots =
+              cell.dateKey && showPatientPreview
+                ? (slotsByDay.get(cell.dateKey) ?? []).filter((s) => !s.available)
+                : [];
+            const hasBooked = dayBookedSlots.length > 0;
+            const isHovered = hoveredDay === cell.dateKey;
+
             return (
-              <button
+              <div
                 key={`${cell.dateKey ?? "empty"}-${index}`}
-                type="button"
                 className={[
-                  "calendar-day",
-                  !cell.isCurrentMonth && "calendar-day--muted",
-                  cell.isToday && "calendar-day--today",
-                  isSelected && "calendar-day--selected",
+                  "calendar-day-wrap",
+                  hasBooked && "calendar-day-wrap--booked",
                 ]
                   .filter(Boolean)
                   .join(" ")}
-                onClick={() => handleDayClick(cell.dateKey)}
-                disabled={!cell.dateKey}
-                aria-pressed={isSelected}
-                aria-label={
-                  cell.dateKey
-                    ? new Date(cell.date!).toLocaleDateString("pt-BR")
-                    : undefined
-                }
+                onMouseEnter={() => hasBooked && cell.dateKey && setHoveredDay(cell.dateKey)}
+                onMouseLeave={() => setHoveredDay(null)}
               >
-                <span className="calendar-day-number">
-                  {cell.date ? cell.date.getDate() : ""}
-                </span>
-                {dayIndicators(cell.dateKey)}
-              </button>
+                <button
+                  type="button"
+                  className={[
+                    "calendar-day",
+                    !cell.isCurrentMonth && "calendar-day--muted",
+                    cell.isToday && "calendar-day--today",
+                    isSelected && "calendar-day--selected",
+                    hasBooked && "calendar-day--booked",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  onClick={() => handleDayClick(cell.dateKey)}
+                  disabled={!cell.dateKey}
+                  aria-pressed={isSelected}
+                  aria-label={
+                    cell.dateKey
+                      ? new Date(cell.date!).toLocaleDateString("pt-BR")
+                      : undefined
+                  }
+                >
+                  <span className="calendar-day-number">
+                    {cell.date ? cell.date.getDate() : ""}
+                  </span>
+                  {dayIndicators(cell.dateKey)}
+                </button>
+                {showPatientPreview && isHovered && hasBooked && (
+                  <PatientPreviewTooltip slots={dayBookedSlots} />
+                )}
+              </div>
             );
           })}
         </div>
@@ -182,27 +209,42 @@ export function SchedulingCalendar({
                 {daySlots.map((slot) => {
                   const isSelected = selectedDatetime === slot.datetime;
                   const canSelect = mode === "select" && slot.available;
+                  const showSlotPreview =
+                    showPatientPreview && !slot.available && hoveredSlot === slot.datetime;
 
                   return (
-                    <button
+                    <div
                       key={slot.datetime}
-                      type="button"
                       className={[
-                        "slot-btn",
-                        isSelected && "selected",
-                        !slot.available && "slot-btn--booked",
+                        "slot-btn-wrap",
+                        !slot.available && "slot-btn-wrap--booked",
                       ]
                         .filter(Boolean)
                         .join(" ")}
-                      disabled={!canSelect}
-                      onClick={() => canSelect && onSelectDatetime?.(slot.datetime)}
-                      title={slot.label}
+                      onMouseEnter={() =>
+                        showPatientPreview && !slot.available && setHoveredSlot(slot.datetime)
+                      }
+                      onMouseLeave={() => setHoveredSlot(null)}
                     >
-                      <span className="slot-btn-time">{formatTime(slot.datetime)}</span>
-                      {!slot.available && (
-                        <span className="slot-btn-status">{slot.label ?? "Ocupado"}</span>
-                      )}
-                    </button>
+                      <button
+                        type="button"
+                        className={[
+                          "slot-btn",
+                          isSelected && "selected",
+                          !slot.available && "slot-btn--booked",
+                        ]
+                          .filter(Boolean)
+                          .join(" ")}
+                        disabled={!canSelect}
+                        onClick={() => canSelect && onSelectDatetime?.(slot.datetime)}
+                      >
+                        <span className="slot-btn-time">{formatTime(slot.datetime)}</span>
+                        {!slot.available && (
+                          <span className="slot-btn-status">{slot.label ?? "Ocupado"}</span>
+                        )}
+                      </button>
+                      {showSlotPreview && <PatientPreviewTooltip slots={[slot]} />}
+                    </div>
                   );
                 })}
               </div>

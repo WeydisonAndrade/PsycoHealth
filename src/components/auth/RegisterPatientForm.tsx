@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Input } from "@/components/ui/Input";
+import { Input, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { Card } from "@/components/ui/Card";
@@ -24,6 +24,7 @@ export function RegisterPatientForm({ redirectTo }: RegisterPatientFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
+  const [concerns, setConcerns] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -37,7 +38,13 @@ export function RegisterPatientForm({ redirectTo }: RegisterPatientFormProps) {
       const res = await fetch("/api/auth/register/patient", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, phone: phone || undefined }),
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          phone: phone || undefined,
+          concerns: concerns || undefined,
+        }),
       });
 
       const data = await res.json();
@@ -73,6 +80,13 @@ export function RegisterPatientForm({ redirectTo }: RegisterPatientFormProps) {
           type="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
+        />
+        <Textarea
+          label="O que você gostaria de trabalhar na terapia? (opcional)"
+          value={concerns}
+          onChange={(e) => setConcerns(e.target.value)}
+          maxLength={500}
+          placeholder="Ex.: ansiedade no trabalho, dificuldade para dormir..."
         />
         <Input
           label="Senha"
