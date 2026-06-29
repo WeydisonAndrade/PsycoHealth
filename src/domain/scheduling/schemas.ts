@@ -17,3 +17,19 @@ export interface TimeSlot {
   datetime: string;
   available: boolean;
 }
+
+/** Slot enriquecido para o calendário (livre ou ocupado) */
+export interface CalendarSlot {
+  datetime: string;
+  available: boolean;
+  label?: string;
+  appointmentId?: string;
+}
+
+/** Consulta do paciente exibida no calendário */
+export interface CalendarEvent {
+  datetime: string;
+  label: string;
+  appointmentId: string;
+  status: string;
+}

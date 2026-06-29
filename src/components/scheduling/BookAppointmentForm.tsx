@@ -1,13 +1,14 @@
 /**
- * Seletor de horários disponíveis e formulário de agendamento de consulta.
- * SlotPicker e BookAppointmentForm usados em src/app/psychologists/[id]/book/BookAppointmentClient.tsx.
+ * Seletor de horários e formulário de agendamento com calendário mensal.
  */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import type { CalendarSlot } from "@/domain/scheduling";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
-import { formatDateTime } from "@/lib/utils";
+import { daysInMonthView } from "@/lib/calendar-utils";
+import { SchedulingCalendar, useCalendarMonth } from "./SchedulingCalendar";
 
 interface SlotPickerProps {
   psychologistId: string;
@@ -15,51 +16,56 @@ interface SlotPickerProps {
   selected?: string;
 }
 
-/**
- * Grade de botões com horários livres do psicólogo (próximos 14 dias).
- * Busca slots via GET /api/psychologists/:id/slots.
- */
+/** Calendário com horários livres e ocupados do psicólogo */
 export function SlotPicker({ psychologistId, onSelect, selected }: SlotPickerProps) {
-  /* --- Estado e hooks --- */
-  const [slots, setSlots] = useState<{ datetime: string; available: boolean }[]>([]);
+  const [month, setMonth] = useCalendarMonth();
+  const [slots, setSlots] = useState<CalendarSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const res = await fetch(`/api/psychologists/${psychologistId}/slots`);
-        const data = await res.json();
-        setSlots(data.slots.filter((s: { available: boolean }) => s.available));
-      } catch {
-        setError("Erro ao carregar horários");
-      } finally {
-        setLoading(false);
+  const loadSlots = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const from = month.toISOString();
+      const days = daysInMonthView(month);
+      const res = await fetch(
+        `/api/psychologists/${psychologistId}/slots?from=${encodeURIComponent(from)}&days=${days}`
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Erro ao carregar horários");
+        setSlots([]);
+        return;
       }
+      setSlots(data.slots ?? []);
+    } catch {
+      setError("Erro ao carregar horários");
+      setSlots([]);
+    } finally {
+      setLoading(false);
     }
-    load();
-  }, [psychologistId]);
+  }, [psychologistId, month]);
 
-  /* --- Renderização --- */
-  if (loading) return <p style={{ color: "var(--text-muted)" }}>Carregando horários...</p>;
+  useEffect(() => {
+    loadSlots();
+  }, [loadSlots]);
+
   if (error) return <Alert type="error">{error}</Alert>;
-  if (slots.length === 0) {
-    return <Alert type="info">Nenhum horário disponível nos próximos 14 dias</Alert>;
+  if (!loading && slots.length === 0) {
+    return <Alert type="info">Nenhum horário disponível neste período</Alert>;
   }
 
   return (
-    <div className="slots-grid">
-      {slots.map((slot) => (
-        <button
-          key={slot.datetime}
-          type="button"
-          className={`slot-btn ${selected === slot.datetime ? "selected" : ""}`}
-          onClick={() => onSelect(slot.datetime)}
-        >
-          {formatDateTime(slot.datetime)}
-        </button>
-      ))}
-    </div>
+    <SchedulingCalendar
+      mode="select"
+      slots={slots}
+      selectedDatetime={selected}
+      onSelectDatetime={onSelect}
+      month={month}
+      onMonthChange={setMonth}
+      loading={loading}
+    />
   );
 }
 
@@ -68,17 +74,14 @@ interface BookAppointmentFormProps {
   onBooked: (appointmentId: string) => void;
 }
 
-/** Formulário que combina SlotPicker com confirmação via POST /api/appointments */
 export function BookAppointmentForm({ psychologistId, onBooked }: BookAppointmentFormProps) {
-  /* --- Estado e hooks --- */
   const [selected, setSelected] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  /* --- Handlers de eventos --- */
   async function handleBook() {
     if (!selected) {
-      setError("Selecione um horário");
+      setError("Selecione um horário disponível");
       return;
     }
 
@@ -106,7 +109,6 @@ export function BookAppointmentForm({ psychologistId, onBooked }: BookAppointmen
     }
   }
 
-  /* --- Renderização --- */
   return (
     <div>
       {error && <Alert type="error">{error}</Alert>}

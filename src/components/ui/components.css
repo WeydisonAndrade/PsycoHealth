@@ -525,6 +525,230 @@
   cursor: not-allowed;
 }
 
+.slot-btn--booked {
+  opacity: 0.65;
+  border-style: dashed;
+}
+
+.slot-btn-time {
+  display: block;
+}
+
+.slot-btn-status {
+  display: block;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  opacity: 0.85;
+}
+
+/* --- Scheduling calendar ---
+   Calendário mensal de consultas e disponibilidade */
+.scheduling-calendar {
+  width: 100%;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.calendar-month-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: var(--gold);
+  margin: 0;
+  text-align: center;
+  flex: 1;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.35rem;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  min-height: 2.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  padding: 0.25rem;
+  background: var(--bg-marble);
+  border: 1px solid var(--border-gold);
+  border-radius: 2px;
+  color: var(--text);
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.calendar-day:hover:not(:disabled) {
+  border-color: var(--gold);
+}
+
+.calendar-day--muted {
+  opacity: 0.45;
+}
+
+.calendar-day--today {
+  border-color: var(--gold);
+}
+
+.calendar-day--selected {
+  background: rgba(201, 169, 98, 0.15);
+  border-color: var(--gold);
+}
+
+.calendar-day-number {
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.calendar-day-dots {
+  display: flex;
+  gap: 0.15rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.calendar-dot {
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.calendar-dot--available {
+  background: #4ade80;
+}
+
+.calendar-dot--booked {
+  background: #f87171;
+}
+
+.calendar-dot--event {
+  background: var(--gold);
+}
+
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.calendar-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.calendar-day-panel {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-gold);
+}
+
+.calendar-day-panel-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--gold);
+  margin: 0 0 0.75rem;
+  text-transform: capitalize;
+}
+
+.calendar-day-section {
+  margin-bottom: 1rem;
+}
+
+.calendar-day-section-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0 0 0.5rem;
+}
+
+.calendar-time-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.calendar-time-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--bg-marble);
+  border: 1px solid var(--border-gold);
+  border-radius: 2px;
+}
+
+.calendar-time-item--event {
+  border-color: var(--gold);
+}
+
+.calendar-time {
+  font-weight: 600;
+  color: var(--gold);
+}
+
+.calendar-time-label {
+  font-size: 0.9rem;
+}
+
+.calendar-empty-day,
+.calendar-loading,
+.calendar-error {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.calendar-psychologist-hint {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+@media (min-width: 768px) {
+  .calendar-day {
+    min-height: 3.25rem;
+  }
+
+  .calendar-month-title {
+    font-size: 1.25rem;
+  }
+}
+
 /* --- Payment split ---
    Linhas de detalhamento de valores no checkout e histórico de repasses */
 .split-row {

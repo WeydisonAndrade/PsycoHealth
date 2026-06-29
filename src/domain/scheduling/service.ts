@@ -42,13 +42,14 @@ function isWithinAvailability(
 
 /**
  * Gera slots de 50 min nos próximos N dias com base na grade semanal.
- * Remove horários já reservados ou no passado.
+ * Horários reservados aparecem como indisponíveis (label opcional com nome do paciente).
  */
-export async function getAvailableSlots(
+export async function getCalendarSlots(
   psychologistId: string,
   fromDate: Date,
-  days = 14
-): Promise<{ datetime: string; available: boolean }[]> {
+  days = 14,
+  options?: { includeBookingDetails?: boolean }
+): Promise<import("./schemas").CalendarSlot[]> {
   const profile = await prisma.psychologistProfile.findUnique({
     where: { id: psychologistId },
     include: { availability: true },
@@ -58,8 +59,9 @@ export async function getAvailableSlots(
 
   const slots: { datetime: string; available: boolean }[] = [];
   const now = new Date();
+  const rangeEnd = new Date(fromDate);
+  rangeEnd.setDate(rangeEnd.getDate() + days);
 
-  // Percorre cada dia do intervalo
   for (let d = 0; d < days; d++) {
     const date = new Date(fromDate);
     date.setDate(date.getDate() + d);
@@ -67,7 +69,6 @@ export async function getAvailableSlots(
 
     const daySlots = profile.availability.filter((s) => s.dayOfWeek === date.getDay());
 
-    // Dentro de cada bloco de disponibilidade, gera slots de SESSION_DURATION_MIN
     for (const avail of daySlots) {
       const { hours: startH, minutes: startM } = parseTime(avail.startTime);
       const { hours: endH, minutes: endM } = parseTime(avail.endTime);
@@ -90,21 +91,80 @@ export async function getAvailableSlots(
     }
   }
 
-  // Marca como indisponível os horários já agendados
   const existing = await prisma.appointment.findMany({
     where: {
       psychologistId,
-      scheduledAt: { gte: fromDate },
+      scheduledAt: { gte: fromDate, lt: rangeEnd },
       status: { notIn: ["CANCELLED"] },
     },
-    select: { scheduledAt: true },
+    select: {
+      id: true,
+      scheduledAt: true,
+      patient: { include: { user: { select: { name: true } } } },
+    },
   });
 
-  const bookedSet = new Set(existing.map((a) => a.scheduledAt.toISOString()));
+  const bookedMap = new Map(
+    existing.map((a) => [a.scheduledAt.toISOString(), a] as const)
+  );
 
-  return slots.map((s) => ({
-    ...s,
-    available: s.available && !bookedSet.has(s.datetime),
+  return slots.map((s) => {
+    const booked = bookedMap.get(s.datetime);
+    if (booked) {
+      return {
+        datetime: s.datetime,
+        available: false,
+        label: options?.includeBookingDetails
+          ? booked.patient.user.name
+          : "Ocupado",
+        appointmentId: booked.id,
+      };
+    }
+    return s;
+  });
+}
+
+/** Retorna slots livres/ocupados (sem dados sensíveis do paciente) */
+export async function getAvailableSlots(
+  psychologistId: string,
+  fromDate: Date,
+  days = 14
+): Promise<{ datetime: string; available: boolean }[]> {
+  const slots = await getCalendarSlots(psychologistId, fromDate, days);
+  return slots.map(({ datetime, available }) => ({ datetime, available }));
+}
+
+/** Consultas do paciente para exibir no calendário */
+export async function getPatientCalendarEvents(
+  patientUserId: string,
+  fromDate: Date,
+  days = 42
+): Promise<import("./schemas").CalendarEvent[]> {
+  const patient = await prisma.patientProfile.findUnique({
+    where: { userId: patientUserId },
+  });
+  if (!patient) return [];
+
+  const rangeEnd = new Date(fromDate);
+  rangeEnd.setDate(rangeEnd.getDate() + days);
+
+  const appointments = await prisma.appointment.findMany({
+    where: {
+      patientId: patient.id,
+      scheduledAt: { gte: fromDate, lt: rangeEnd },
+      status: { notIn: ["CANCELLED"] },
+    },
+    include: {
+      psychologist: { include: { user: { select: { name: true } } } },
+    },
+    orderBy: { scheduledAt: "asc" },
+  });
+
+  return appointments.map((a) => ({
+    datetime: a.scheduledAt.toISOString(),
+    label: a.psychologist.user.name,
+    appointmentId: a.id,
+    status: a.status,
   }));
 }
 

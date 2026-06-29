@@ -11,6 +11,7 @@ import { ProfileForm } from "@/components/psychologist/ProfileForm";
 import { AvailabilityEditor } from "@/components/psychologist/AvailabilityEditor";
 import { EarningsSummary } from "@/components/psychologist/EarningsSummary";
 import { AppointmentCard } from "@/components/scheduling/AppointmentCard";
+import { PsychologistCalendarPanel } from "@/components/scheduling/PsychologistCalendarPanel";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 
 export default async function PsychologistDashboardPage() {
@@ -49,6 +50,10 @@ export default async function PsychologistDashboardPage() {
         <div className="grid-2 mb-3">
           <ProfileForm initial={profile} />
           <AvailabilityEditor initialSlots={profile.availability} />
+        </div>
+
+        <div className="mb-3">
+          <PsychologistCalendarPanel />
         </div>
 
         {/* Lista de consultas com pacientes */}
