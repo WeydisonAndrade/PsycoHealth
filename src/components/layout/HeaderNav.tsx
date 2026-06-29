@@ -1,6 +1,6 @@
 /**
  * Navegação do cabeçalho com links condicionais conforme autenticação e papel do usuário.
- * Menu colapsável em mobile; botão Sair sempre visível quando autenticado.
+ * Menu colapsável em mobile; botão Sair no menu quando autenticado.
  */
 "use client";
 
@@ -32,10 +32,6 @@ export function HeaderNav({ session }: HeaderNavProps) {
 
   return (
     <div className="header-toolbar">
-      {session && (
-        <LogoutButton variant="secondary" size="sm" className="nav-logout-direct" />
-      )}
-
       <button
         type="button"
         className="nav-toggle"
@@ -62,11 +58,13 @@ export function HeaderNav({ session }: HeaderNavProps) {
         aria-label="Menu principal"
       >
         <ul className="nav-list">
-          <li>
-            <Link href="/psychologists" onClick={closeMenu}>
-              Psicólogos
-            </Link>
-          </li>
+          {session?.role !== "PSYCHOLOGIST" && (
+            <li>
+              <Link href="/psychologists" onClick={closeMenu}>
+                Psicólogos
+              </Link>
+            </li>
+          )}
           {session ? (
             <>
               <li>

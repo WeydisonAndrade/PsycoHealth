@@ -10,7 +10,6 @@ import { getPatientAppointments } from "@/domain/scheduling";
 import { AppointmentCard } from "@/components/scheduling/AppointmentCard";
 import { PatientCalendarPanel } from "@/components/scheduling/PatientCalendarPanel";
 import { Button } from "@/components/ui/Button";
-import { LogoutButton } from "@/components/auth/LogoutButton";
 
 export default async function PatientDashboardPage() {
   /** Guardas de rota — redireciona visitantes e psicólogos para suas áreas */
@@ -28,7 +27,6 @@ export default async function PatientDashboardPage() {
             <h1 className="page-title">Olá, {session.name}</h1>
             <p className="page-subtitle">Suas consultas e agendamentos</p>
           </div>
-          <LogoutButton variant="ghost" size="sm" className="page-logout-btn" />
         </div>
 
         {/* Ação rápida para iniciar novo agendamento */}
