@@ -67,11 +67,13 @@ export function HeaderNav({ session }: HeaderNavProps) {
           )}
           {session ? (
             <>
-              <li>
-                <Link href={getDashboardPath(session.role)} onClick={closeMenu}>
-                  Minha área
-                </Link>
-              </li>
+              {session.role !== "PSYCHOLOGIST" && (
+                <li>
+                  <Link href={getDashboardPath(session.role)} onClick={closeMenu}>
+                    Minha área
+                  </Link>
+                </li>
+              )}
               <li className="nav-logout-menu">
                 <LogoutButton variant="ghost" size="sm" fullWidth className="nav-logout-menu-btn" />
               </li>
