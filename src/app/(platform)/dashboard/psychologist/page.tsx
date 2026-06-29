@@ -11,6 +11,7 @@ import { ProfileForm } from "@/components/psychologist/ProfileForm";
 import { AvailabilityEditor } from "@/components/psychologist/AvailabilityEditor";
 import { EarningsSummary } from "@/components/psychologist/EarningsSummary";
 import { AppointmentCard } from "@/components/scheduling/AppointmentCard";
+import { LogoutButton } from "@/components/auth/LogoutButton";
 
 export default async function PsychologistDashboardPage() {
   /** Guardas de rota — redireciona visitantes e pacientes para suas áreas */
@@ -27,8 +28,13 @@ export default async function PsychologistDashboardPage() {
   return (
     <div className="page">
       <div className="container">
-        <h1 className="page-title">Olá, {session.name}</h1>
-        <p className="page-subtitle">Painel do psicólogo — CRP {profile.crp}</p>
+        <div className="page-header-row">
+          <div>
+            <h1 className="page-title">Olá, {session.name}</h1>
+            <p className="page-subtitle">Painel do psicólogo — CRP {profile.crp}</p>
+          </div>
+          <LogoutButton variant="ghost" size="sm" className="page-logout-btn" />
+        </div>
 
         {/* Resumo financeiro — total recebido e histórico de pagamentos */}
         <div className="mb-3">

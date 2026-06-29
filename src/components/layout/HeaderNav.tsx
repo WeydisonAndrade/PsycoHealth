@@ -1,22 +1,21 @@
 /**
  * Navegação do cabeçalho com links condicionais conforme autenticação e papel do usuário.
- * Menu colapsável em mobile (mobile first).
+ * Menu colapsável em mobile; botão Sair sempre visível quando autenticado.
  */
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { LogoutButton } from "@/components/auth/LogoutButton";
 import type { SessionPayload } from "@/lib/session";
-import { getDashboardPath, LOGOUT_REDIRECT_PATH } from "@/lib/auth-routes";
+import { getDashboardPath } from "@/lib/auth-routes";
 
 interface HeaderNavProps {
   session: SessionPayload | null;
 }
 
 export function HeaderNav({ session }: HeaderNavProps) {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   function closeMenu() {
@@ -31,15 +30,12 @@ export function HeaderNav({ session }: HeaderNavProps) {
     });
   }
 
-  async function handleLogout() {
-    closeMenu();
-    await fetch("/api/auth/session", { method: "POST" });
-    router.push(LOGOUT_REDIRECT_PATH);
-    router.refresh();
-  }
-
   return (
-    <>
+    <div className="header-toolbar">
+      {session && (
+        <LogoutButton variant="secondary" size="sm" className="nav-logout-direct" />
+      )}
+
       <button
         type="button"
         className="nav-toggle"
@@ -78,10 +74,8 @@ export function HeaderNav({ session }: HeaderNavProps) {
                   Minha área
                 </Link>
               </li>
-              <li>
-                <Button variant="ghost" size="sm" onClick={handleLogout}>
-                  Sair
-                </Button>
+              <li className="nav-logout-menu">
+                <LogoutButton variant="ghost" size="sm" fullWidth className="nav-logout-menu-btn" />
               </li>
             </>
           ) : (
@@ -102,6 +96,6 @@ export function HeaderNav({ session }: HeaderNavProps) {
           )}
         </ul>
       </nav>
-    </>
+    </div>
   );
 }

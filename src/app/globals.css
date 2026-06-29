@@ -150,6 +150,23 @@ main {
   max-width: 65ch;
 }
 
+.page-header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.page-header-row .page-subtitle {
+  margin-bottom: 0;
+}
+
+.page-logout-btn {
+  flex-shrink: 0;
+}
+
 @media (min-width: 768px) {
   .page-subtitle {
     margin-bottom: 2rem;
