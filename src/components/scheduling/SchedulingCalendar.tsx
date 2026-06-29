@@ -3,11 +3,12 @@
  */
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { CalendarEvent, CalendarSlot } from "@/domain/scheduling";
 import {
   WEEKDAY_LABELS,
   addMonths,
+  findFirstHighlightedDay,
   formatDayLabel,
   formatMonthYear,
   formatTime,
@@ -51,6 +52,24 @@ export function SchedulingCalendar({
   const [selectedDay, setSelectedDay] = useState<string | null>(todayKey);
   const [hoveredDay, setHoveredDay] = useState<string | null>(null);
   const [hoveredSlot, setHoveredSlot] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (loading) return;
+
+    const firstDay = findFirstHighlightedDay(month, slotsByDay, eventsByDay, mode);
+    if (!firstDay) {
+      setSelectedDay(todayKey);
+      return;
+    }
+
+    const todaySlots = slotsByDay.get(todayKey) ?? [];
+    const todayHasRelevant =
+      mode === "select"
+        ? todaySlots.some((s) => s.available)
+        : todaySlots.length > 0 || (eventsByDay.get(todayKey)?.length ?? 0) > 0;
+
+    setSelectedDay(todayHasRelevant ? todayKey : firstDay);
+  }, [slots, events, loading, month, mode, slotsByDay, eventsByDay, todayKey]);
 
   const daySlots = selectedDay ? (slotsByDay.get(selectedDay) ?? []) : [];
   const dayEvents = selectedDay ? (eventsByDay.get(selectedDay) ?? []) : [];

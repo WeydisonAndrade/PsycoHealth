@@ -12,8 +12,11 @@ export async function GET(request: Request) {
   // Extração de filtros da query string
   const { searchParams } = new URL(request.url);
   const specialty = searchParams.get("specialty") ?? undefined;
+  const bookable = searchParams.get("bookable") === "true";
 
-  // Busca de psicólogos via serviço de domínio
-  const psychologists = await listPsychologists({ specialty });
+  let psychologists = await listPsychologists({ specialty });
+  if (bookable) {
+    psychologists = psychologists.filter((p) => p.availability.length > 0);
+  }
   return NextResponse.json({ psychologists });
 }

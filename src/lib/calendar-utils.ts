@@ -109,3 +109,27 @@ export function groupEventsByDay(events: CalendarEvent[]): Map<string, CalendarE
 export function daysInMonthView(month: Date): number {
   return 42;
 }
+
+/** Primeiro dia (YYYY-MM-DD) com horários ou consultas no mês exibido */
+export function findFirstHighlightedDay(
+  month: Date,
+  slotsByDay: Map<string, CalendarSlot[]>,
+  eventsByDay: Map<string, CalendarEvent[]>,
+  mode: "view" | "select"
+): string | null {
+  const gridKeys = getMonthGrid(month)
+    .map((cell) => cell.dateKey)
+    .filter((key): key is string => Boolean(key));
+
+  for (const key of gridKeys) {
+    const daySlots = slotsByDay.get(key) ?? [];
+    const dayEvents = eventsByDay.get(key) ?? [];
+    const hasRelevant =
+      mode === "select"
+        ? daySlots.some((s) => s.available)
+        : daySlots.length > 0 || dayEvents.length > 0;
+    if (hasRelevant) return key;
+  }
+
+  return null;
+}

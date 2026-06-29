@@ -8,7 +8,7 @@ import type { CalendarSlot } from "@/domain/scheduling";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Input";
-import { daysInMonthView } from "@/lib/calendar-utils";
+import { daysInMonthView, startOfMonth } from "@/lib/calendar-utils";
 import { SchedulingCalendar, useCalendarMonth } from "./SchedulingCalendar";
 
 interface SlotPickerProps {
@@ -28,7 +28,7 @@ export function SlotPicker({ psychologistId, onSelect, selected }: SlotPickerPro
     setLoading(true);
     setError("");
     try {
-      const from = month.toISOString();
+      const from = startOfMonth(month).toISOString();
       const days = daysInMonthView(month);
       const res = await fetch(
         `/api/psychologists/${psychologistId}/slots?from=${encodeURIComponent(from)}&days=${days}`

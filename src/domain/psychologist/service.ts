@@ -23,11 +23,13 @@ export async function listPsychologists(filters?: { specialty?: string }) {
     orderBy: { createdAt: "desc" },
   });
 
-  // Deserializa especialidades JSON → array para a UI
-  return profiles.map((p) => ({
-    ...p,
-    specialties: parseSpecialties(p.specialties),
-  }));
+  // Prioriza psicólogos com grade de horários configurada
+  return profiles
+    .map((p) => ({
+      ...p,
+      specialties: parseSpecialties(p.specialties),
+    }))
+    .sort((a, b) => b.availability.length - a.availability.length);
 }
 
 /** Perfil público exibido em /psychologists/[id] */

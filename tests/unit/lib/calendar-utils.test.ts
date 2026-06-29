@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   addMonths,
+  findFirstHighlightedDay,
   getMonthGrid,
   groupSlotsByDay,
   startOfMonth,
@@ -40,5 +41,14 @@ describe("calendar-utils", () => {
     ]);
     expect(map.get("2026-06-28")).toHaveLength(2);
     expect(map.get("2026-06-29")).toHaveLength(1);
+  });
+
+  it("findFirstHighlightedDay encontra primeiro dia com slot livre", () => {
+    const month = new Date(2026, 5, 1);
+    const map = groupSlotsByDay([
+      { datetime: new Date(2026, 5, 29, 10, 0).toISOString(), available: true },
+    ]);
+    const day = findFirstHighlightedDay(month, map, new Map(), "select");
+    expect(day).toBe("2026-06-29");
   });
 });

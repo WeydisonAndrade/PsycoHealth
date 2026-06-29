@@ -9,7 +9,7 @@ import type { CalendarEvent, CalendarSlot } from "@/domain/scheduling";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Input";
-import { daysInMonthView } from "@/lib/calendar-utils";
+import { daysInMonthView, startOfMonth } from "@/lib/calendar-utils";
 import { SchedulingCalendar, useCalendarMonth } from "./SchedulingCalendar";
 
 interface PsychologistOption {
@@ -35,12 +35,12 @@ export function PatientCalendarPanel() {
   useEffect(() => {
     async function loadPsychologists() {
       try {
-        const res = await fetch("/api/psychologists");
+        const res = await fetch("/api/psychologists?bookable=true");
         const data = await res.json();
         const list: PsychologistOption[] = data.psychologists ?? [];
         setPsychologists(list);
         if (list.length > 0) {
-          setSelectedPsychologistId((current) => current || list[0].id);
+          setSelectedPsychologistId(list[0].id);
         }
       } catch {
         setError("Erro ao carregar psicólogos");
@@ -73,7 +73,7 @@ export function PatientCalendarPanel() {
     setLoadingSlots(true);
     setSelectedDatetime("");
     try {
-      const from = availabilityMonth.toISOString();
+      const from = startOfMonth(availabilityMonth).toISOString();
       const days = daysInMonthView(availabilityMonth);
       const res = await fetch(
         `/api/psychologists/${selectedPsychologistId}/slots?from=${encodeURIComponent(from)}&days=${days}`
@@ -163,6 +163,12 @@ export function PatientCalendarPanel() {
             <div className="mb-2">
               <Alert type="error">{error}</Alert>
             </div>
+          )}
+
+          {psychologists.length === 0 && !loadingSlots && (
+            <Alert type="info">
+              Nenhum psicólogo com horários configurados no momento. Tente novamente mais tarde.
+            </Alert>
           )}
 
           <div className="form-group mb-2">

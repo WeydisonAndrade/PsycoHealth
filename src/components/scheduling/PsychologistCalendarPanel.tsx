@@ -5,7 +5,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { CalendarSlot } from "@/domain/scheduling";
-import { daysInMonthView } from "@/lib/calendar-utils";
+import { daysInMonthView, startOfMonth } from "@/lib/calendar-utils";
 import { SchedulingCalendar, useCalendarMonth } from "./SchedulingCalendar";
 
 export function PsychologistCalendarPanel() {
@@ -18,7 +18,7 @@ export function PsychologistCalendarPanel() {
     setLoading(true);
     setError("");
     try {
-      const from = month.toISOString();
+      const from = startOfMonth(month).toISOString();
       const days = daysInMonthView(month);
       const res = await fetch(
         `/api/psychologists/me/calendar?from=${encodeURIComponent(from)}&days=${days}`
